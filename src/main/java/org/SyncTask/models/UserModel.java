@@ -33,11 +33,7 @@ public class UserModel {
         return UserID;
     }
 
-    public void generateUserID() {
-        this.UserID = UUID.randomUUID();
-    }
-
-    public void setUserID(UUID userID) { this.UserID = userID; }
+    public void setUserID() { this.UserID = UUID.randomUUID(); }
 
     public String getName() {
         return Name;

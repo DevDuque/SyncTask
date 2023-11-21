@@ -19,11 +19,12 @@ public class MainTask {
 
         // Criar uma tarefa e adicioná-la à lista
         TaskModel task1 = new TaskModel();
-        task1.setUserID(UUID.fromString("c5106f49-8815-11ee-86b7-40b076d8628f"));
-        task1.setTitle("Task Title 1");
-        task1.setDescription("Task Description 1");
+        task1.setTaskID();
+        task1.setUserID(UUID.fromString("c5864cac-7491-4c5c-851d-2cec8862a153"));
+        task1.setTitle("Título da Tarefa");
+        task1.setDescription("Descrição");
         task1.setDateEnd(new Date());
-        task1.setPriority("High");
+        task1.setPriority("Alta");
 
         // Adicionar a tarefa ao banco de dados usando o TaskDAO
         TaskModel taskInserted1 = taskDAO.insert(task1);

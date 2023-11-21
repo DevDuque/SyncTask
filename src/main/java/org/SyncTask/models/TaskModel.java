@@ -33,16 +33,12 @@ public class TaskModel {
     public UUID getTaskID() {
         return TaskID;
     }
-    public void setTaskID(UUID taskID) {
-        TaskID = taskID;
+    public void setTaskID() {
+        this.TaskID = UUID.randomUUID();
     }
 
     public UUID getUserID() {
         return UserID;
-    }
-
-    public void generateTaskID() {
-        this.TaskID = UUID.randomUUID();
     }
 
     public void setUserID(UUID userID) {
