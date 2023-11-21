@@ -69,10 +69,26 @@ public class UserDAO extends DAO<UserModel> {
         return userInserted;
     }
 
-    // Atualizar um usuário no banco de dados
     @Override
-    public boolean update(UserModel OBJ) {
-        return false;
+    // Atualizar um usuário no banco de dados
+    public boolean update(UserModel user) {
+        boolean response = false;
+
+        String updateQuery = "UPDATE UserTable SET Name = ?, Username = ? WHERE UserID = ?";
+
+        try {
+            PreparedStatement ps = this.myConnection.prepareStatement(updateQuery);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getUsername());
+            ps.setString(3, user.getUserID().toString());
+
+            int rowsAffected = ps.executeUpdate();
+            response = rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar usuário: " + user.getUserID() + e.getMessage());
+        }
+
+        return response;
     }
 
     // Excluir um usuário do banco de dados
