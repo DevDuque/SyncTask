@@ -11,8 +11,8 @@ public class Main {
     public static void main(String[] args) {
         // Configurações do banco de dados
         String url = "jdbc:mysql://localhost:3306/SyncTask";
-        String usuario = "2023954740";
-        String senha = "2023954740";
+        String usuario = "root";
+        String senha = "";
 
         try {
             // Conectar ao banco de dados
@@ -27,10 +27,10 @@ public class Main {
 
             // Exibir os resultados
             while (resultado.next()) {
-                UUID userId = UUID.fromString(resultado.getString("userId"));
-                String nome = resultado.getString("nome");
-                String username = resultado.getString("username");
-                String createdAt = resultado.getString("createdAt");
+                UUID userId = UUID.fromString(resultado.getString("UserID"));
+                String nome = resultado.getString("Name");
+                String username = resultado.getString("Username");
+                String createdAt = resultado.getString("CreatedAt");
 
                 System.out.println("UserID: " + userId);
                 System.out.println("Nome: " + nome);
