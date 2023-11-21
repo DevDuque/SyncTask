@@ -1,6 +1,6 @@
 package org.SyncTask.models;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 // Modelo de Usuário para criação de acordo com a tabela
@@ -10,10 +10,11 @@ public class UserModel {
     private String Name;
     private String Username;
     private String Password;
-    private LocalDateTime createdAt;
+    private Date createdAt;
     private Boolean isAdmin;
 
-    public UserModel(UUID UserID, String Name, String Username, String Password, LocalDateTime createdAt, boolean isAdmin) {
+    // Constructor de UserModel
+    public UserModel(UUID UserID, String Name, String Username, String Password, Date createdAt, boolean isAdmin) {
         this.UserID = UserID;
         this.Name = Name;
         this.Username = Username;
@@ -22,14 +23,21 @@ public class UserModel {
         this.isAdmin = isAdmin;
     }
 
+    // Constructor sem dados como parametro
+    public UserModel() {
+        this.createdAt = new Date();
+    }
+
     // Getters & Setters para pegar os dados e deixa-los privados
     public UUID getUserID() {
         return UserID;
     }
 
-    public void setUserID(UUID userID) {
-        UserID = userID;
+    public void generateUserID() {
+        this.UserID = UUID.randomUUID();
     }
+
+    public void setUserID(UUID userID) { this.UserID = userID; }
 
     public String getName() {
         return Name;
@@ -55,11 +63,11 @@ public class UserModel {
         Password = password;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 

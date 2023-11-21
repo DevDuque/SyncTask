@@ -6,29 +6,23 @@ import java.sql.SQLException;
 
 public class MyConnection {
 
-        public static Connection getConnection() {
+    private static Connection conn = null;
 
-            //String de conexão
-            String uri = "jdbc:mysql://localhost:3306/todolist";
-
-            // usuário e senha de autenticação ao banco
+    public static Connection getConnection() {
+        if (conn == null) {
+            // Se a conexão ainda não foi criada, então a cria
+            String uri = "jdbc:mysql://localhost:3306/SyncTask";
             String usuario = "root";
             String senha = "";
 
-            // variável responsável por realizar a conexão ao banco
-            Connection conn = null;
-
             try {
-                //Carregando o driver
                 Class.forName("com.mysql.cj.jdbc.Driver");
-
-                //abrindo a conexão
                 conn = DriverManager.getConnection(uri, usuario, senha);
-            } catch (ClassNotFoundException e) {
-                System.out.println("Driver não carregado");
-            } catch (SQLException e) {
-                System.out.println("Conexão não realizada");
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace(); // Tratar exceções de uma forma mais robusta em produção
             }
-            return conn;
         }
+
+        return conn;
     }
+}

@@ -1,7 +1,6 @@
 package org.SyncTask.models;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 // Modelo de Tarefa para criação de acordo com a tabela
@@ -12,11 +11,11 @@ public class TaskModel {
     private String Title;
     private String Description;
     private String Priority;
-    private LocalDateTime DateEnd;
-    private LocalDateTime createdAt;
+    private Date DateEnd;
+    private Date createdAt;
 
     // Construtor
-    public TaskModel(UUID taskID, UUID userID, String title, String description, String priority, LocalDateTime dateEnd, LocalDateTime createdAt) {
+    public TaskModel(UUID taskID, UUID userID, String title, String description, String priority, Date dateEnd, Date createdAt) {
         this.TaskID = taskID;
         this.UserID = userID;
         this.Title = title;
@@ -24,6 +23,10 @@ public class TaskModel {
         this.Priority = priority;
         this.DateEnd = dateEnd;
         this.createdAt = createdAt;
+    }
+
+    public TaskModel() {
+        this.createdAt = new Date();
     }
 
     // Getters & Setters para pegar os dados e deixa-los privados
@@ -37,6 +40,11 @@ public class TaskModel {
     public UUID getUserID() {
         return UserID;
     }
+
+    public void generateTaskID() {
+        this.TaskID = UUID.randomUUID();
+    }
+
     public void setUserID(UUID userID) {
         UserID = userID;
     }
@@ -62,18 +70,18 @@ public class TaskModel {
         Priority = priority;
     }
 
-    public LocalDateTime getDateEnd() {
+    public Date getDateEnd() {
         return DateEnd;
     }
 
-    public void setDateEnd(LocalDateTime dateEnd) {
+    public void setDateEnd(Date dateEnd) {
         DateEnd = dateEnd;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 }
