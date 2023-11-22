@@ -33,14 +33,14 @@ public class MainUser {
         List<UserModel> userList = new ArrayList<>();
 
         // Criar um usuário e adicioná-lo à lista
-        UserModel user1 = new UserModel();
-        user1.setName("Davih Duque");
-        user1.setUsername("DevDuque");
-        user1.setPassword("password123");
-        user1.setAdmin(true);
+        UserModel user = new UserModel();
+        user.setName("Davih Duque");
+        user.setUsername("DevDuque");
+        user.setPassword("password123");
+        user.setAdmin(true);
 
         // Adicionar o usuário ao banco de dados usando o UserDAO
-        UserModel userInserted = userDAO.insert(user1);
+        UserModel userInserted = userDAO.insert(user);
 
         // Adicionar o usuário inserido à lista
         userList.add(userInserted);
@@ -52,9 +52,9 @@ public class MainUser {
         UserModel userUpdated = null;
 
         // Procurando o usuário na lista de usuários
-        for (UserModel user : userList) {
-            if (user.getUserID().equals(updateID)) {
-                userUpdated = user;
+        for (UserModel users : userList) {
+            if (users.getUserID().equals(updateID)) {
+                userUpdated = users;
                 break;
             }
         }

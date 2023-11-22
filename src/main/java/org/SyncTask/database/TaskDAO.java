@@ -72,9 +72,30 @@ public class TaskDAO extends DAO<TaskModel> {
     }
 
     @Override
-    public boolean update(TaskModel OBJ) {
-        // Implementação ausente: Deve ser usada para atualizar uma tarefa no banco de dados
-        return false;
+    public boolean update(TaskModel task) {
+        // Atualizar uma tarefa no banco de dados
+        boolean response = false;
+
+        String updateQuery = "UPDATE TaskTable SET Title = ?, Description = ?,  Priority = ?, DateEnd = ?";
+
+        try {
+            PreparedStatement ps = this.myConnection.prepareStatement(updateQuery);
+
+            ps.setString(1, task.getTitle());
+            ps.setString(2, task.getDescription());
+            ps.setString(3, task.getPriority());
+
+            // Convertendo java.util.Date para java.sql.Date
+            java.sql.Date sqlDate = new java.sql.Date(task.getDateEnd().getTime());
+            ps.setDate(4, sqlDate);
+
+            int rowsAffected = ps.executeUpdate();
+            response = rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar tarefa: " + task.getTaskID() + e.getMessage());
+        }
+
+        return response;
     }
 
     @Override
