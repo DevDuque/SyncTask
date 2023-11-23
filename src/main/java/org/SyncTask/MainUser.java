@@ -30,56 +30,90 @@ public class MainUser {
         UserDAO userDAO = new UserDAO();
 
         // Criar uma lista para armazenar usuários
-        List<UserModel> userList = new ArrayList<>();
+//        List<UserModel> userList = new ArrayList<>();
+//
+//        // Criar um usuário e adicioná-lo à lista
+//        UserModel user = new UserModel();
+//        user.setName("Davih Duque");
+//        user.setUsername("DevDuque");
+//        user.setPassword("password123");
+//        user.setAdmin(true);
+//
+//        // Adicionar o usuário ao banco de dados usando o UserDAO
+//        UserModel userInserted = userDAO.insert(user);
+//
+//        // Adicionar o usuário inserido à lista
+//        userList.add(userInserted);
+//
+//        imprimirLista(userList);
+//
+//        // Inicializando ID para atualização
+//        UUID updateID = userInserted.getUserID();
+//        UserModel userUpdated = null;
+//
+//        // Procurando o usuário na lista de usuários
+//        for (UserModel users : userList) {
+//            if (users.getUserID().equals(updateID)) {
+//                userUpdated = users;
+//                break;
+//            }
+//        }
+//
+//        try {
+//            if (userUpdated != null) {
+//                // Atualizar os dados do usuário
+//                userUpdated.setName("Atualizando de novo");
+//                userUpdated.setUsername("BAAAH");
+//
+//                // Chamar a função de atualização no banco de dados
+//                boolean updateSuccessful = userDAO.update(userUpdated);
+//
+//                // Verificar se a atualização foi bem-sucedida
+//                if (updateSuccessful) {
+//                    System.out.println("Usuário atualizado com sucesso no banco de dados.");
+//                    imprimirLista(userList);
+//                } else {
+//                    throw new Exception("Erro ao atualizar usuário no banco de dados.");
+//                }
+//            } else {
+//                throw new Exception("Usuário não encontrado na lista.");
+//            }
+//        } catch (Exception e) {
+//            System.err.println("Erro durante a atualização do usuário: " + e.getMessage());
+//        }
 
-        // Criar um usuário e adicioná-lo à lista
-        UserModel user = new UserModel();
-        user.setName("Davih Duque");
-        user.setUsername("DevDuque");
-        user.setPassword("password123");
-        user.setAdmin(true);
 
-        // Adicionar o usuário ao banco de dados usando o UserDAO
-        UserModel userInserted = userDAO.insert(user);
 
-        // Adicionar o usuário inserido à lista
-        userList.add(userInserted);
+        //BUSCA POR ID
 
-        imprimirLista(userList);
+        // Escolher um ID existente (substitua 'algumID' pelo UUID real)
+        UUID someID = UUID.fromString("69fc591e-871e-11ee-a7c1-6c946630f592");
 
-        // Inicializando ID para atualização
-        UUID updateID = userInserted.getUserID();
-        UserModel userUpdated = null;
+        // Recuperar um usuário pelo ID
+        UserModel userByID = userDAO.findByID(someID);
 
-        // Procurando o usuário na lista de usuários
-        for (UserModel users : userList) {
-            if (users.getUserID().equals(updateID)) {
-                userUpdated = users;
-                break;
-            }
+        // Imprimir os detalhes do usuário recuperado
+        if (userByID != null) {
+            System.out.println("Usuário encontrado por ID:");
+            System.out.println("UserID: " + userByID.getUserID());
+            System.out.println("Name: " + userByID.getName());
+            System.out.println("Username: " + userByID.getUsername());
+            System.out.println("Admin: " + userByID.getAdmin());
+            System.out.println("CreatedAt " + userByID.getCreatedAt());
+            System.out.println();
+        } else {
+            System.out.println("Nenhum usuário encontrado para o ID fornecido.");
         }
 
-        try {
-            if (userUpdated != null) {
-                // Atualizar os dados do usuário
-                userUpdated.setName("Atualizando de novo");
-                userUpdated.setUsername("BAAAH");
 
-                // Chamar a função de atualização no banco de dados
-                boolean updateSuccessful = userDAO.update(userUpdated);
 
-                // Verificar se a atualização foi bem-sucedida
-                if (updateSuccessful) {
-                    System.out.println("Usuário atualizado com sucesso no banco de dados.");
-                    imprimirLista(userList);
-                } else {
-                    throw new Exception("Erro ao atualizar usuário no banco de dados.");
-                }
-            } else {
-                throw new Exception("Usuário não encontrado na lista.");
-            }
-        } catch (Exception e) {
-            System.err.println("Erro durante a atualização do usuário: " + e.getMessage());
-        }
+        // FIND ALL
+
+        // Recuperar todos os usuários do banco de dados
+        List<UserModel> allUsers = userDAO.findAll();
+
+        // Imprimir os detalhes dos usuários recuperados
+        System.out.println("Todos os usuários no banco de dados:");
+        imprimirLista(allUsers);
     }
 }

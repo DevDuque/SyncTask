@@ -25,7 +25,6 @@ public class MainTask {
     }
 
     public static void main(String[] args) {
-        // Criar uma instância de TaskDAO
         TaskDAO taskDAO = new TaskDAO();
 
         // Criar uma lista para armazenar tarefas
@@ -85,5 +84,43 @@ public class MainTask {
         } catch (Exception e) {
             System.err.println("Erro durante a atualização da tarefa: " + e.getMessage());
         }
+
+
+        // BUSCA POR ID
+
+        //System.out.println("TESTE findByID");
+        // Substitua o UUID a seguir pelo ID real de uma tarefa existente no banco de dados
+        //UUID taskIDToFind = UUID.fromString("coloque-aqui-o-uuid-da-tarefa");
+
+        // Obtendo uma tarefa por ID do banco de dados
+        //TaskModel foundTask = taskDAO.findByID(taskIDToFind);
+
+        // Verificando se a tarefa foi encontrada
+        //if (foundTask != null) {
+            //System.out.println("Tarefa encontrada por ID:");
+            //System.out.println("TaskID: " + foundTask.getTaskID());
+            //System.out.println("UserID: " + foundTask.getUserID());
+            //System.out.println("Title: " + foundTask.getTitle());
+            //System.out.println("Description: " + foundTask.getDescription());
+            //System.out.println("DateEnd: " + foundTask.getDateEnd());
+            //System.out.println("Priority: " + foundTask.getPriority());
+        //} else {
+            //System.out.println("Tarefa não encontrada por ID.");
+        //}
+        //System.out.println("FIM TESTE findByID");
+
+
+        // ALL FIND
+
+        //System.out.println("Teste ALLFIND");
+
+        // Obtendo todas as tarefas do banco de dados
+        //List<TaskModel> allTasks = taskDAO.findAll();
+
+        // Imprimindo detalhes das tarefas
+        //imprimirLista(allTasks);
+
+        //System.out.println("FIM Teste ALLFIND");
+
     }
 }

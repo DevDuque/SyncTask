@@ -5,9 +5,12 @@ import org.SyncTask.models.UserModel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Date;
 
 public class UserDAO extends DAO<UserModel> {
     private Connection myConnection;
@@ -20,13 +23,75 @@ public class UserDAO extends DAO<UserModel> {
     // Recuperar todos os usuários do banco de dados
     @Override
     public List<UserModel> findAll() {
-        return null;
+        List<UserModel> userList = new ArrayList<>();
+
+        // Comando MySQL para selecionar todas as tarefas
+        String selectQuery = "SELECT * FROM UserTable";
+
+        try {
+            // Preparando a declaração SQL
+            PreparedStatement ps = this.myConnection.prepareStatement(selectQuery);
+
+            // Executando a consulta SQL
+            ResultSet rs = ps.executeQuery();
+
+            // Iterando sobre o resultado para criar objetos TaskModel e adicioná-los à lista
+            while (rs.next()) {
+                UUID userID = UUID.fromString(rs.getString("UserID"));
+                String name = rs.getString("Name");
+                String username = rs.getString("Username");
+                String password = rs.getString("Password");
+                boolean isAdmin = rs.getBoolean("IsAdmin");
+                Date createdAt = rs.getDate("CreatedAt");
+
+                UserModel user = new UserModel(userID, name, username, password, createdAt, isAdmin);
+
+                userList.add(user);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao recuperar os usuários: " + e.getMessage());
+        }
+
+        return userList;
     }
 
     // Recuperar um usuário por ID do banco de dados
     @Override
     public UserModel findByID(UUID ID) {
-        return null;
+        // Inicializar um objeto UserModel
+        UserModel user = null;
+
+        // Consulta SQL para selecionar um usuário pelo ID
+        String selectQuery = "SELECT * FROM UserTable WHERE UserID = ?";
+
+        try {
+            // Criar um PreparedStatement
+            PreparedStatement ps = this.myConnection.prepareStatement(selectQuery);
+
+            // Definir o parâmetro UUID
+            ps.setString(1, ID.toString());
+
+            // Executar a consulta
+            ResultSet rs = ps.executeQuery();
+
+            // Verificar se o conjunto de resultados contém um usuário
+            if (rs.next()) {
+                // Recuperar detalhes do usuário do conjunto de resultados
+                String name = rs.getString("Name");
+                String username = rs.getString("Username");
+                String password = rs.getString("Password");
+                boolean isAdmin = rs.getBoolean("IsAdmin");
+                Date createdAt = rs.getDate("CreatedAt");
+
+                // Criar um objeto UserModel
+                user = new UserModel(ID, name, username, password, createdAt, isAdmin);
+            }
+        } catch (SQLException e) {
+            // Lidar com exceções SQL
+            System.err.println("Erro ao recuperar usuário por ID: " + e.getMessage());
+        }
+
+        return user;
     }
 
     // Função para inserir um usuário no banco de dados

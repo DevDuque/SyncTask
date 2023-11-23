@@ -5,7 +5,10 @@ import org.SyncTask.models.TaskModel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,13 +21,70 @@ public class TaskDAO extends DAO<TaskModel> {
 
     @Override
     public List<TaskModel> findAll() {
-        // Implementação ausente: Deve ser usada para recuperar todas as tarefas do banco de dados
-        return null;
+        List<TaskModel> taskList = new ArrayList<>();
+
+        // Comando MySQL para selecionar todas as tarefas
+        String selectAllQuery = "SELECT * FROM tasktable";
+
+        try {
+            // Preparando a declaração SQL
+            PreparedStatement ps = this.myConnection.prepareStatement(selectAllQuery);
+
+            // Executando a consulta SQL
+            ResultSet rs = ps.executeQuery();
+
+            // Iterando sobre o resultado para criar objetos TaskModel e adicioná-los à lista
+            while (rs.next()) {
+                UUID taskID = UUID.fromString(rs.getString("TaskID"));
+                UUID userID = UUID.fromString(rs.getString("UserID"));
+                String title = rs.getString("Title");
+                String description = rs.getString("Description");
+                String priority = rs.getString("Priority");
+                java.sql.Date sqlDate = rs.getDate("DateEnd");
+                Date dateEnd = new Date(sqlDate.getTime());
+                Date createdAt = rs.getTimestamp("CreatedAt");
+
+                TaskModel task = new TaskModel(taskID, userID, title, description, priority, dateEnd, createdAt);
+                taskList.add(task);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao recuperar todas as tarefas: " + e.getMessage());
+        }
+
+        return taskList;
     }
 
     @Override
     public TaskModel findByID(UUID ID) {
-        // Implementação ausente: Deve ser usada para recuperar uma tarefa por ID do banco de dados
+        // Comando MySQL para selecionar uma tarefa por ID
+        String selectByIDQuery = "SELECT * FROM TaskTable WHERE TaskID = ?";
+
+        try {
+            // Preparando a declaração SQL
+            PreparedStatement ps = this.myConnection.prepareStatement(selectByIDQuery);
+            ps.setString(1, ID.toString());
+
+            // Executando a consulta SQL
+            ResultSet rs = ps.executeQuery();
+
+            // Verificando se a consulta retornou algum resultado
+            if (rs.next()) {
+                UUID taskID = UUID.fromString(rs.getString("TaskID"));
+                UUID userID = UUID.fromString(rs.getString("UserID"));
+                String title = rs.getString("Title");
+                String description = rs.getString("Description");
+                String priority = rs.getString("Priority");
+                java.sql.Date sqlDate = rs.getDate("DateEnd");
+                Date dateEnd = new Date(sqlDate.getTime());
+                Date createdAt = rs.getTimestamp("CreatedAt");
+
+                return new TaskModel(taskID, userID, title, description, priority, dateEnd, createdAt);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao recuperar a tarefa por ID: " + e.getMessage());
+        }
+
+        // Se a tarefa não for encontrada, retorna null
         return null;
     }
 
