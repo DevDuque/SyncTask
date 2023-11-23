@@ -2,6 +2,7 @@ package org.SyncTask;
 
 import org.SyncTask.database.TaskDAO;
 import org.SyncTask.models.TaskModel;
+import org.SyncTask.models.UserModel;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +14,6 @@ public class MainTask {
     public static void imprimirLista(List<TaskModel> taskList) {
         // Imprimir os detalhes das tarefas na lista
         for (TaskModel task : taskList) {
-            System.out.println("Task details:");
             System.out.println("TaskID: " + task.getTaskID());
             System.out.println("UserID: " + task.getUserID());
             System.out.println("Title: " + task.getTitle());
@@ -24,57 +24,75 @@ public class MainTask {
         }
     }
 
+    public static void imprimirTarefa(TaskModel task) {
+
+        // Imprimir os detalhes de tarefa na lista
+        System.out.println("TaskID: " + task.getTaskID());
+        System.out.println("UserID: " + task.getUserID());
+        System.out.println("Title: " + task.getTitle());
+        System.out.println("Description: " + task.getDescription());
+        System.out.println("DateEnd: " + task.getDateEnd());
+        System.out.println("Priority: " + task.getPriority());
+        System.out.println();
+    }
+
     public static void main(String[] args) {
+
+        // Criando uma instância de TaskDAO
         TaskDAO taskDAO = new TaskDAO();
 
-        // Criar uma lista para armazenar tarefas
-        List<TaskModel> taskList = new ArrayList<>();
-
-        // Criar uma tarefa e adicioná-la à lista
+        // Criar uma tarefa
         TaskModel task = new TaskModel();
         task.setTaskID();
-        task.setUserID(UUID.fromString("c5864cac-7491-4c5c-851d-2cec8862a153"));
+        task.setUserID(UUID.fromString("bb06b508-befd-4806-ade2-a9c68c76d7ed"));
         task.setTitle("Título da Tarefa");
         task.setDescription("Descrição");
         task.setDateEnd(new Date());
         task.setPriority("Alta");
 
         // Adicionar a tarefa ao banco de dados usando o TaskDAO
-        TaskModel taskInserted = taskDAO.insert(task);
+        taskDAO.insert(task);
 
-        // Adicionar a tarefa inserida à lista
-        taskList.add(taskInserted);
+        // Imprimindo a tarefa criada
+        System.out.println("Tarefa criada com sucesso! \nID: " + task.getTaskID() + "\nUserID = " + task.getUserID() + "\n");
 
+        // FIND ALL
+        // Recuperar todas as tarefas do banco de dados e salvando em uma lista
+        List<TaskModel> taskList = taskDAO.findAll();
+
+        // Imprimir os detalhes das tarefas recuperadas
+        System.out.println("Todas as tarefas no banco de dados: ");
         imprimirLista(taskList);
 
-        // Inicializando ID para atualização
-        UUID updateID = taskInserted.getTaskID();
-        TaskModel taskUpdated = null;
+        //BUSCA POR ID
 
-        // Procurando o usuário na lista de usuários
-        for(TaskModel tasks : taskList) {
-            if(tasks.getTaskID().equals(updateID)) {
-                taskUpdated = task;
+        // Escolher um ID existente (substitua 'algumID' pelo UUID real)
+        UUID someID = UUID.fromString("ad65251b-74f0-4f24-b424-20d116dfe9ea");
 
-                break;
-            }
+        // Recuperar uma tarefa pelo ID
+        TaskModel taskByID = taskDAO.findByID(someID);
+
+        // Imprimir os detalhes de tarefa recuperada
+        if(taskByID != null) {
+            System.out.println("Tarefa encontrada por ID:");
+            imprimirTarefa(taskByID);
         }
 
         try {
-            if(taskUpdated != null) {
+            if(taskByID != null) {
                 // Atualizando dados de tarefas
-                taskUpdated.setTitle("Um novo título");
-                taskUpdated.setDescription("Uma nova descrição");
-                taskUpdated.setDateEnd(new Date());
-                taskUpdated.setPriority("Média");
+                taskByID.setTitle("Um novo título");
+                taskByID.setDescription("Uma nova descrição");
+                taskByID.setDateEnd(new Date());
+                taskByID.setPriority("Média");
 
                 // Chamando a função de atualização no banco de dados
-                boolean updateSuccessful = taskDAO.update(taskUpdated);
+                boolean updateSuccessful = taskDAO.update(taskByID);
 
                 // Verificar se a atualização foi bem-sucedida
                 if(updateSuccessful) {
                     System.out.println("Tarefa atualizada com sucesso no banco de dados");
-                    imprimirLista(taskList);
+                    imprimirTarefa(taskByID);
                 } else {
                     throw new Exception("Erro ao atualizar usuário no banco de dados");
                 }
@@ -84,43 +102,5 @@ public class MainTask {
         } catch (Exception e) {
             System.err.println("Erro durante a atualização da tarefa: " + e.getMessage());
         }
-
-
-        // BUSCA POR ID
-
-        //System.out.println("TESTE findByID");
-        // Substitua o UUID a seguir pelo ID real de uma tarefa existente no banco de dados
-        //UUID taskIDToFind = UUID.fromString("coloque-aqui-o-uuid-da-tarefa");
-
-        // Obtendo uma tarefa por ID do banco de dados
-        //TaskModel foundTask = taskDAO.findByID(taskIDToFind);
-
-        // Verificando se a tarefa foi encontrada
-        //if (foundTask != null) {
-            //System.out.println("Tarefa encontrada por ID:");
-            //System.out.println("TaskID: " + foundTask.getTaskID());
-            //System.out.println("UserID: " + foundTask.getUserID());
-            //System.out.println("Title: " + foundTask.getTitle());
-            //System.out.println("Description: " + foundTask.getDescription());
-            //System.out.println("DateEnd: " + foundTask.getDateEnd());
-            //System.out.println("Priority: " + foundTask.getPriority());
-        //} else {
-            //System.out.println("Tarefa não encontrada por ID.");
-        //}
-        //System.out.println("FIM TESTE findByID");
-
-
-        // ALL FIND
-
-        //System.out.println("Teste ALLFIND");
-
-        // Obtendo todas as tarefas do banco de dados
-        //List<TaskModel> allTasks = taskDAO.findAll();
-
-        // Imprimindo detalhes das tarefas
-        //imprimirLista(allTasks);
-
-        //System.out.println("FIM Teste ALLFIND");
-
     }
 }
