@@ -14,13 +14,7 @@ public class MainTask {
     public static void imprimirLista(List<TaskModel> taskList) {
         // Imprimir os detalhes das tarefas na lista
         for (TaskModel task : taskList) {
-            System.out.println("TaskID: " + task.getTaskID());
-            System.out.println("UserID: " + task.getUserID());
-            System.out.println("Title: " + task.getTitle());
-            System.out.println("Description: " + task.getDescription());
-            System.out.println("DateEnd: " + task.getDateEnd());
-            System.out.println("Priority: " + task.getPriority());
-            System.out.println();
+            imprimirTarefa(task);
         }
     }
 

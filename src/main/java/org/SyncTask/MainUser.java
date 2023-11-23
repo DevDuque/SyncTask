@@ -25,12 +25,7 @@ public class MainUser {
 
         // Imprimir os detalhes dos usuários na lista
         for (UserModel user : userList) {
-            System.out.println("UserID: " + user.getUserID());
-            System.out.println("Name: " + user.getName());
-            System.out.println("Username: " + user.getUsername());
-            System.out.println("Admin: " + user.getAdmin());
-            System.out.println("CreatedAt " + user.getCreatedAt());
-            System.out.println();
+            imprimirUsuario(user);
         }
     }
 
@@ -41,8 +36,8 @@ public class MainUser {
 
         // Criar um usuário
         UserModel user = new UserModel();
-        user.setName("Davih Duque");
-        user.setUsername("DevDuque");
+        user.setName("Pedro Nunes");
+        user.setUsername("PNunes");
         user.setPassword("password123");
         user.setAdmin(true);
 
@@ -63,7 +58,7 @@ public class MainUser {
         //BUSCA POR ID
 
         // Escolher um ID existente (substitua 'algumID' pelo UUID real)
-        UUID someID = UUID.fromString("e085afeb-ea2f-44fe-972a-157f09ac9b06");
+        UUID someID = UUID.fromString("d430804b-4343-4d80-b6ce-70f414272f6f");
 
         // Recuperar um usuário pelo ID
         UserModel userByID = userDAO.findByID(someID);
