@@ -1,10 +1,10 @@
 package org.SyncTask;
 
+// Importações do próprio projeto
 import org.SyncTask.database.TaskDAO;
 import org.SyncTask.models.TaskModel;
-import org.SyncTask.models.UserModel;
 
-import java.util.ArrayList;
+// Importações do Java
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -54,7 +54,7 @@ public class MainTask {
         taskDAO.insert(task);
 
         // Imprimindo a tarefa criada
-        System.out.println("Tarefa criada com sucesso! \nID: " + task.getTaskID() + "\nUserID = " + task.getUserID() + "\n");
+        System.out.println("Tarefa criada com sucesso! \nTaskID: " + task.getTaskID() + "\nUserID = " + task.getUserID() + "\n");
 
         // FIND ALL
         // Recuperar todas as tarefas do banco de dados e salvando em uma lista
@@ -67,7 +67,7 @@ public class MainTask {
         //BUSCA POR ID
 
         // Escolher um ID existente (substitua 'algumID' pelo UUID real)
-        UUID someID = UUID.fromString("ad65251b-74f0-4f24-b424-20d116dfe9ea");
+        UUID someID = UUID.fromString("410e890d-9b60-4a25-88c1-63d0c7dd40eb");
 
         // Recuperar uma tarefa pelo ID
         TaskModel taskByID = taskDAO.findByID(someID);

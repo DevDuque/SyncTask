@@ -1,9 +1,10 @@
 package org.SyncTask;
 
-
+// Importações do próprio projeto
 import org.SyncTask.database.UserDAO;
 import org.SyncTask.models.UserModel;
 
+// Importações do Java
 import java.util.List;
 import java.util.UUID;
 
@@ -49,7 +50,7 @@ public class MainUser {
         userDAO.insert(user);
 
         // Imprimindo o usuário criado
-        System.out.println("Usuário criado com sucesso! \nNome: " + user.getName() + "\nID = " + user.getUserID() + "\n");
+        System.out.println("Usuário criado com sucesso! \nNome: " + user.getName() + "\nUserID = " + user.getUserID() + "\n");
 
         // FIND ALL
         // Recuperar todos os usuários do banco de dados e salvando em uma lista
@@ -62,7 +63,7 @@ public class MainUser {
         //BUSCA POR ID
 
         // Escolher um ID existente (substitua 'algumID' pelo UUID real)
-        UUID someID = UUID.fromString("bb06b508-befd-4806-ade2-a9c68c76d7ed");
+        UUID someID = UUID.fromString("e085afeb-ea2f-44fe-972a-157f09ac9b06");
 
         // Recuperar um usuário pelo ID
         UserModel userByID = userDAO.findByID(someID);
