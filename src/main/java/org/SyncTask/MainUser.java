@@ -34,18 +34,18 @@ public class MainUser {
         // Criar uma instância de UserDAO
         UserDAO userDAO = new UserDAO();
 
-        // Criar um usuário
-        UserModel user = new UserModel();
-        user.setName("Pedro Nunes");
-        user.setUsername("PNunes");
-        user.setPassword("password123");
-        user.setAdmin(true);
-
-        // Adicionar o usuário ao banco de dados usando o UserDAO
-        userDAO.insert(user);
-
-        // Imprimindo o usuário criado
-        System.out.println("Usuário criado com sucesso! \nNome: " + user.getName() + "\nUserID = " + user.getUserID() + "\n");
+//        // Criar um usuário
+//        UserModel user = new UserModel();
+//        user.setName("Davih Duque");
+//        user.setUsername("DevDuque");
+//        user.setPassword("password123");
+//        user.setAdmin(true);
+//
+//        // Adicionar o usuário ao banco de dados usando o UserDAO
+//        userDAO.insert(user);
+//
+//        // Imprimindo o usuário criado
+//        System.out.println("Usuário criado com sucesso! \nNome: " + user.getName() + "\nUserID = " + user.getUserID() + "\n");
 
         // FIND ALL
         // Recuperar todos os usuários do banco de dados e salvando em uma lista

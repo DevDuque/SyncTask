@@ -35,20 +35,20 @@ public class MainTask {
         // Criando uma instância de TaskDAO
         TaskDAO taskDAO = new TaskDAO();
 
-        // Criar uma tarefa
-        TaskModel task = new TaskModel();
-        task.setTaskID();
-        task.setUserID(UUID.fromString("bb06b508-befd-4806-ade2-a9c68c76d7ed"));
-        task.setTitle("Título da Tarefa");
-        task.setDescription("Descrição");
-        task.setDateEnd(new Date());
-        task.setPriority("Alta");
-
-        // Adicionar a tarefa ao banco de dados usando o TaskDAO
-        taskDAO.insert(task);
-
-        // Imprimindo a tarefa criada
-        System.out.println("Tarefa criada com sucesso! \nTaskID: " + task.getTaskID() + "\nUserID = " + task.getUserID() + "\n");
+//        // Criar uma tarefa
+//        TaskModel task = new TaskModel();
+//        task.setTaskID();
+//        task.setUserID(UUID.fromString("12beef2f-1b52-4b23-ba3c-addf69c28a45"));
+//        task.setTitle("Título da Tarefa");
+//        task.setDescription("Descrição");
+//        task.setDateEnd(new Date());
+//        task.setPriority("Alta");
+//
+//        // Adicionar a tarefa ao banco de dados usando o TaskDAO
+//        taskDAO.insert(task);
+//
+//        // Imprimindo a tarefa criada
+//        System.out.println("Tarefa criada com sucesso! \nTaskID: " + task.getTaskID() + "\nUserID = " + task.getUserID() + "\n");
 
         // FIND ALL
         // Recuperar todas as tarefas do banco de dados e salvando em uma lista
