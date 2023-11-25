@@ -67,9 +67,8 @@ public class Main {
         } catch (UserNotFoundException e) {
             // Se a exceção UserNotFoundException for lançada, o usuário não foi encontrado
             System.out.println("Usuário não encontrado. Autenticação falhou.");
-        } finally {
-            // Certifique-se de fechar o scanner para evitar vazamento de recursos
-            scanner.close();
         }
+
+        scanner.close();
     }
 }
