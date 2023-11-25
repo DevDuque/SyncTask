@@ -161,4 +161,23 @@ public class UserDAO extends DAO<UserModel> {
     public boolean delete(UserModel OBJ) {
         return false;
     }
+
+    public static void returnUser(UserModel user) {
+
+        // Imprimir os detalhes do usuário na lista
+        System.out.println("UserID: " + user.getUserID());
+        System.out.println("Name: " + user.getName());
+        System.out.println("Username: " + user.getUsername());
+        System.out.println("Admin: " + user.getAdmin());
+        System.out.println("CreatedAt " + user.getCreatedAt());
+        System.out.println();
+    }
+
+    public static void returnUserList(List<UserModel> userList) {
+
+        // Imprimir os detalhes dos usuários na lista
+        for (UserModel user : userList) {
+            returnUser(user);
+        }
+    }
 }

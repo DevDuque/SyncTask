@@ -1,5 +1,6 @@
 package org.SyncTask.connection;
 
+import org.SyncTask.exceptions.InvalidPasswordException;
 import org.SyncTask.exceptions.UserNotFoundException;
 import org.SyncTask.models.UserModel;
 
@@ -29,38 +30,44 @@ public class MyConnection {
     }
 
     // Método para autenticar um usuário
-    public static UserModel authenticateUser(String username, String password) throws UserNotFoundException {
+    public static UserModel authenticateUser(String username, String password) throws InvalidPasswordException, UserNotFoundException {
         // Comando MySQL para verificar a autenticação do usuário
-        String authenticationQuery = "SELECT * FROM UserTable WHERE Username = ? AND Password = ?";
+        String authenticationQuery = "SELECT * FROM UserTable WHERE Username = ?";
 
         try {
             // Preparando a declaração SQL
             PreparedStatement ps = conn.prepareStatement(authenticationQuery);
 
-            // Definindo os parâmetros da declaração SQL com base no nome de usuário e senha fornecidos
+            // Definindo os parâmetros da declaração SQL com base no nome de usuário fornecido
             ps.setString(1, username);
-            ps.setString(2, password);
 
-            // Preparando a declaração SQL
+            // Executando a consulta SQL
             ResultSet rs = ps.executeQuery();
 
-            // Verificando se o conjunto de resultados contém um usuário autenticado
-            if (!rs.next()) {
-                // Lançar a exceção se o usuário não for encontrado
+            // Verificando se o conjunto de resultados contém um usuário com o nome de usuário fornecido
+            if (rs.next()) {
+                // Verificando a senha
+                String storedPassword = rs.getString("Password");
+                if (password.equals(storedPassword)) {
+                    // Criar e retornar um objeto UserModel se a senha estiver correta
+                    UUID userID = UUID.fromString(rs.getString("UserID"));
+                    String name = rs.getString("Name");
+                    boolean isAdmin = rs.getBoolean("IsAdmin");
+
+                    return new UserModel(userID, name, username, password, new Date(2023, 11, 26), isAdmin);
+                } else {
+                    // Se a senha estiver incorreta, lançar a exceção InvalidPasswordException
+                    throw new InvalidPasswordException("Senha incorreta");
+                }
+            } else {
+                // Se o usuário não for encontrado, lançar a exceção UserNotFoundException
                 throw new UserNotFoundException("Nenhum usuário encontrado no banco de dados");
             }
 
-            // Criar um objeto UserModel com base nos dados recuperados do banco de dados
-            UUID UserID = UUID.fromString(rs.getString("UserID"));
-            String Name = rs.getString("Name");
-            boolean isAdmin = rs.getBoolean("IsAdmin");
-
-            return new UserModel(UserID, Name, username, password, new Date(2023, 11, 26), isAdmin);
-
-            // Se chegou aqui, o usuário está autenticado
         } catch (SQLException e) {
             e.printStackTrace(); // Tratar exceções de uma forma mais robusta em produção
         }
+
         return null;
     }
 }

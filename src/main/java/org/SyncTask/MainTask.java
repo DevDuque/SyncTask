@@ -9,26 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static org.SyncTask.database.TaskDAO.*;
+
 public class MainTask {
-
-    public static void imprimirLista(List<TaskModel> taskList) {
-        // Imprimir os detalhes das tarefas na lista
-        for (TaskModel task : taskList) {
-            imprimirTarefa(task);
-        }
-    }
-
-    public static void imprimirTarefa(TaskModel task) {
-
-        // Imprimir os detalhes de tarefa na lista
-        System.out.println("TaskID: " + task.getTaskID());
-        System.out.println("UserID: " + task.getUserID());
-        System.out.println("Title: " + task.getTitle());
-        System.out.println("Description: " + task.getDescription());
-        System.out.println("DateEnd: " + task.getDateEnd());
-        System.out.println("Priority: " + task.getPriority());
-        System.out.println();
-    }
 
     public static void main(String[] args) {
 
@@ -56,7 +39,7 @@ public class MainTask {
 
         // Imprimir os detalhes das tarefas recuperadas
         System.out.println("Todas as tarefas no banco de dados: ");
-        imprimirLista(taskList);
+        returnTaskList(taskList);
 
         //BUSCA POR ID
 
@@ -69,7 +52,7 @@ public class MainTask {
         // Imprimir os detalhes de tarefa recuperada
         if(taskByID != null) {
             System.out.println("Tarefa encontrada por ID:");
-            imprimirTarefa(taskByID);
+            returnTask(taskByID);
         }
 
         try {
@@ -86,7 +69,7 @@ public class MainTask {
                 // Verificar se a atualização foi bem-sucedida
                 if(updateSuccessful) {
                     System.out.println("Tarefa atualizada com sucesso no banco de dados");
-                    imprimirTarefa(taskByID);
+                    returnTask(taskByID);
                 } else {
                     throw new Exception("Erro ao atualizar usuário no banco de dados");
                 }

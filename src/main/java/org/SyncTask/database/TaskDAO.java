@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class TaskDAO extends DAO<TaskModel> {
+
     private Connection myConnection;
 
     public TaskDAO() {
@@ -88,6 +89,42 @@ public class TaskDAO extends DAO<TaskModel> {
         return null;
     }
 
+    // Adicione este método na classe TaskDAO
+    public List<TaskModel> findByUserID(UUID userID) {
+        List<TaskModel> taskList = new ArrayList<>();
+
+        // Comando MySQL para selecionar todas as tarefas de um usuário específico
+        String selectByUserIDQuery = "SELECT * FROM TaskTable WHERE UserID = ?";
+
+        try {
+            // Preparando a declaração SQL
+            PreparedStatement ps = this.myConnection.prepareStatement(selectByUserIDQuery);
+            ps.setString(1, userID.toString());
+
+            // Executando a consulta SQL
+            ResultSet rs = ps.executeQuery();
+
+            // Iterando sobre o resultado para criar objetos TaskModel e adicioná-los à lista
+            while (rs.next()) {
+                UUID taskID = UUID.fromString(rs.getString("TaskID"));
+                String title = rs.getString("Title");
+                String description = rs.getString("Description");
+                String priority = rs.getString("Priority");
+                java.sql.Date sqlDate = rs.getDate("DateEnd");
+                Date dateEnd = new Date(sqlDate.getTime());
+                Date createdAt = rs.getTimestamp("CreatedAt");
+
+                TaskModel task = new TaskModel(taskID, userID, title, description, priority, dateEnd, createdAt);
+                taskList.add(task);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao recuperar tarefas por UserID: " + e.getMessage());
+        }
+
+        return taskList;
+    }
+
+
     @Override
     public TaskModel insert(TaskModel task) {
         // Inicializando variável de tarefa inserida
@@ -134,8 +171,6 @@ public class TaskDAO extends DAO<TaskModel> {
         return taskInserted;
     }
 
-
-
     @Override
     public boolean update(TaskModel task) {
         // Atualizar uma tarefa no banco de dados
@@ -167,5 +202,24 @@ public class TaskDAO extends DAO<TaskModel> {
     public boolean delete(TaskModel OBJ) {
         // Implementação ausente: Deve ser usada para excluir uma tarefa do banco de dados
         return false;
+    }
+
+    public static void returnTaskList(List<TaskModel> taskList) {
+        // Imprimir os detalhes das tarefas na lista
+        for (TaskModel task : taskList) {
+            returnTask(task);
+        }
+    }
+
+    public static void returnTask(TaskModel task) {
+
+        // Imprimir os detalhes de tarefa na lista
+        System.out.println("TaskID: " + task.getTaskID());
+        System.out.println("UserID: " + task.getUserID());
+        System.out.println("Title: " + task.getTitle());
+        System.out.println("Description: " + task.getDescription());
+        System.out.println("DateEnd: " + task.getDateEnd());
+        System.out.println("Priority: " + task.getPriority());
+        System.out.println();
     }
 }

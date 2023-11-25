@@ -8,26 +8,10 @@ import org.SyncTask.models.UserModel;
 import java.util.List;
 import java.util.UUID;
 
+import static org.SyncTask.database.UserDAO.returnUser;
+import static org.SyncTask.database.UserDAO.returnUserList;
+
 public class MainUser {
-
-    public static void imprimirUsuario(UserModel user) {
-
-        // Imprimir os detalhes do usuário na lista
-        System.out.println("UserID: " + user.getUserID());
-        System.out.println("Name: " + user.getName());
-        System.out.println("Username: " + user.getUsername());
-        System.out.println("Admin: " + user.getAdmin());
-        System.out.println("CreatedAt " + user.getCreatedAt());
-        System.out.println();
-    }
-
-    public static void imprimirLista(List<UserModel> userList) {
-
-        // Imprimir os detalhes dos usuários na lista
-        for (UserModel user : userList) {
-            imprimirUsuario(user);
-        }
-    }
 
     public static void main(String[] args) {
 
@@ -53,7 +37,7 @@ public class MainUser {
 
         // Imprimir os detalhes dos usuários recuperados
         System.out.println("Todos os usuários no banco de dados:");
-        imprimirLista(userList);
+        returnUserList(userList);
 
         //BUSCA POR ID
 
@@ -66,7 +50,7 @@ public class MainUser {
         // Imprimir os detalhes do usuário recuperado
         if (userByID != null) {
             System.out.println("Usuário encontrado por ID:");
-            imprimirUsuario(userByID);
+            returnUser(userByID);
         } else {
             System.out.println("Nenhum usuário encontrado para o ID fornecido.");
         }
@@ -84,7 +68,7 @@ public class MainUser {
                 // Verificar se a atualização foi bem-sucedida
                 if (updateSuccessful) {
                     System.out.println("Usuário atualizado com sucesso no banco de dados.");
-                    imprimirUsuario(userByID);
+                    returnUser(userByID);
                 } else {
                     throw new Exception("Erro ao atualizar usuário no banco de dados.");
                 }
