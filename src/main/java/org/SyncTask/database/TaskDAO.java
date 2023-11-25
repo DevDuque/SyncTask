@@ -94,7 +94,7 @@ public class TaskDAO extends DAO<TaskModel> {
         TaskModel taskInserted = null;
 
         // Comando MySQL para inserção
-        String insertQuery = "INSERT INTO TaskTable (UserID, Title, Description, DateEnd, Priority, TaskID) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO TaskTable (TaskID, UserID, Title, Description, DateEnd, Priority) VALUES (?, ?, ?, ?, ?, ?)";
 
         // Fazendo um try/catch para lançamento de Exceptions
         try {
@@ -104,32 +104,37 @@ public class TaskDAO extends DAO<TaskModel> {
             task.setTaskID();
 
             // Definindo os parâmetros da declaração SQL com base no objeto TaskModel fornecido
-            ps.setObject(1, task.getUserID().toString());
-            ps.setString(2, task.getTitle());
-            ps.setString(3, task.getDescription());
+            ps.setString(1, task.getTaskID().toString());
+            ps.setString(2, task.getUserID().toString());
+            ps.setString(3, task.getTitle());
+            ps.setString(4, task.getDescription());
 
             // Convertendo java.util.Date para java.sql.Date
             java.sql.Date sqlDate = new java.sql.Date(task.getDateEnd().getTime());
-            ps.setDate(4, sqlDate);
-            ps.setString(5, task.getPriority());
-            ps.setString(6, task.getTaskID().toString());
+            ps.setDate(5, sqlDate);
+            ps.setString(6, task.getPriority());
 
             // Executando a declaração SQL
             int rowAffected = ps.executeUpdate();
 
             // Verificando se a inserção foi bem-sucedida
-            if(rowAffected == 1) {
+            if (rowAffected == 1) {
                 // Atribuindo a tarefa inserida à variável de retorno
                 taskInserted = task;
+            } else {
+                System.err.println("Nenhuma linha afetada ao inserir a tarefa. A inserção falhou.");
             }
         } catch (SQLException e) {
             // Lidando com exceções SQL, imprimindo uma mensagem de erro
             System.err.println("Erro ao criar tarefa: " + e.getMessage());
+            e.printStackTrace(); // Adicionando rastreamento completo da exceção
         }
 
         // Retornando a tarefa inserida ou null em caso de falha
         return taskInserted;
     }
+
+
 
     @Override
     public boolean update(TaskModel task) {
