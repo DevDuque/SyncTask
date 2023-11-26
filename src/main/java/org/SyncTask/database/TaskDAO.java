@@ -200,8 +200,24 @@ public class TaskDAO extends DAO<TaskModel> {
 
     @Override
     public boolean delete(UUID taskID) {
-        // Implementação ausente: Deve ser usada para excluir uma tarefa do banco de dados
-        return false;
+        // Lógica para deletar uma tarefa com o ID fornecido
+        String deleteQuery = "DELETE FROM TaskTable WHERE taskID = ?";
+        try {
+            PreparedStatement preparedStatement = this.myConnection.prepareStatement(deleteQuery);
+
+            // Setar o parâmetro do ID
+            preparedStatement.setString(1, taskID.toString());
+
+            // Executar a instrução DELETE
+            int rowsDeleted = preparedStatement.executeUpdate();
+
+            // Verificar se a deleção foi bem-sucedida
+            return rowsDeleted > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Erro durante a deleção da tarefa: " + e.getMessage());
+            return false;
+        }
     }
 
     public static void returnTaskList(List<TaskModel> taskList) {
@@ -216,24 +232,26 @@ public class TaskDAO extends DAO<TaskModel> {
         }
     }
 
-    public static void returnTask(TaskModel task) {
+    public static String returnTask(TaskModel task) {
+        // Construir uma String com os detalhes da tarefa
+        StringBuilder taskDetails = new StringBuilder();
+        taskDetails.append("TaskID: ").append(task.getTaskID()).append("\n");
+        taskDetails.append("UserID: ").append(task.getUserID()).append("\n");
+        taskDetails.append("Title: ").append(task.getTitle()).append("\n");
+        taskDetails.append("Description: ").append(task.getDescription()).append("\n");
+        taskDetails.append("DateEnd: ").append(task.getDateEnd()).append("\n");
+        taskDetails.append("Priority: ").append(task.getPriority()).append("\n\n");
 
-        // Imprimir os detalhes de tarefa na lista
-        System.out.println("TaskID: " + task.getTaskID());
-        System.out.println("UserID: " + task.getUserID());
-        System.out.println("Title: " + task.getTitle());
-        System.out.println("Description: " + task.getDescription());
-        System.out.println("DateEnd: " + task.getDateEnd());
-        System.out.println("Priority: " + task.getPriority());
-        System.out.println();
+        // Retornar a String com os detalhes da tarefa
+        return taskDetails.toString();
     }
 
     public static String toString(TaskModel task) {
         return "ID: " + task.getTaskID() +
-                "\nTítulo: " + task.getTitle() +
-                "\nDescrição: " + task.getDescription() +
+                "\nTitulo: " + task.getTitle() +
+                "\nDescricao: " + task.getDescription() +
                 "\nPrioridade: " + task.getPriority() +
-                "\nData de Término: " + task.getDateEnd() +
+                "\nData de Termino: " + task.getDateEnd() +
                 "\n----------";
     }
 }

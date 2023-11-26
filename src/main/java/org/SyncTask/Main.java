@@ -53,13 +53,13 @@ public class Main {
                         newTask.setDateEnd(new Date());
                         newTask.setUserID(authenticatedUser.getUserID()); // Define o UserID com o ID do usuário autenticado
 
-                        // Exibir informações da tarefa antes de inserir
-                        TaskDAO.returnTask(newTask);
+                        String taskDetailsString = TaskDAO.returnTask(newTask);
+
 
                         // Dar ao usuário a opção de confirmar ou voltar ao início
                         Object[] confirmOptions = {"Confirmar e inserir a tarefa", "Voltar ao inicio sem inserir"};
                         int confirmOption = JOptionPane.showOptionDialog(null,
-                                "Escolha uma opcao:", "Confirmacao", JOptionPane.DEFAULT_OPTION,
+                                "Tarefa a ser inserida \n" + taskDetailsString, "Confirmacao", JOptionPane.DEFAULT_OPTION,
                                 JOptionPane.PLAIN_MESSAGE, null, confirmOptions, confirmOptions[0]);
 
                         if (confirmOption == 0) {
@@ -74,14 +74,14 @@ public class Main {
                         } else if (confirmOption == 1) {
                             JOptionPane.showMessageDialog(null, "Retornando ao inicio. Nenhuma tarefa inserida.");
                         } else {
-                            JOptionPane.showMessageDialog(null, "Opção invalida. Retornando ao inicio. Nenhuma tarefa inserida.");
+                            JOptionPane.showMessageDialog(null, "Opcao invalida. Retornando ao inicio. Nenhuma tarefa inserida.");
                         }
                         break;
 
                     case 1:
                         // Recuperar e exibir todas as tarefas do usuário
                         List<TaskModel> userTasks = taskDAO.findByUserID(authenticatedUser.getUserID());
-                        StringBuilder taskList = new StringBuilder("Tarefas do usuário " + authenticatedUser.getUsername() + ":\n");
+                        StringBuilder taskList = new StringBuilder("Tarefas do usuario " + authenticatedUser.getUsername() + ":\n");
                         for (TaskModel task : userTasks) {
                             taskList.append(TaskDAO.toString(task)).append("\n");
                         }
@@ -89,11 +89,11 @@ public class Main {
                         break;
 
                     case 2:
-                        JOptionPane.showMessageDialog(null, "Saindo do programa. Até logo!");
+                        JOptionPane.showMessageDialog(null, "Saindo do programa. Ate logo!");
                         break;
 
                     default:
-                        JOptionPane.showMessageDialog(null, "Opção inválida. Tente novamente.");
+                        JOptionPane.showMessageDialog(null, "Opcao invalida. Tente novamente.");
                         break;
                 }
             } while (choice != 2);

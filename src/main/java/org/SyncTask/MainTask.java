@@ -33,6 +33,21 @@ public class MainTask {
 //        // Imprimindo a tarefa criada
 //        System.out.println("Tarefa criada com sucesso! \nTaskID: " + task.getTaskID() + "\nUserID = " + task.getUserID() + "\n");
 
+        // DELETE USER
+
+        // Escolher um ID existente para deletar (substitua 'algumID' pelo UUID real)
+        UUID taskIDToDelete = UUID.fromString("eba920c8-1afa-49a9-b186-4194d8728438");
+
+        // Tentar deletar a tarefa com o ID especificado
+        boolean deletionSuccessful = taskDAO.delete(taskIDToDelete);
+
+        // Verificar se a deleção foi bem-sucedida
+        if (deletionSuccessful) {
+            System.out.println("Tarefa deletada com sucesso do banco de dados.");
+        } else {
+            System.out.println("Falha ao deletar a tarefa do banco de dados.");
+        }
+
         // FIND ALL
         // Recuperar todas as tarefas do banco de dados e salvando em uma lista
         List<TaskModel> taskList = taskDAO.findAll();

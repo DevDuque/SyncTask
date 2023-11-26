@@ -61,7 +61,7 @@ public class MyConnection {
                 }
             } else {
                 // Se o usuário não for encontrado, lançar a exceção UserNotFoundException
-                throw new UserNotFoundException("Nenhum usuário encontrado no banco de dados");
+                throw new UserNotFoundException("Nenhum usuario encontrado no banco de dados");
             }
 
         } catch (SQLException e) {
