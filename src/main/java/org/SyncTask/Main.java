@@ -7,119 +7,104 @@ import org.SyncTask.models.TaskModel;
 import org.SyncTask.models.UserModel;
 import org.SyncTask.database.TaskDAO;
 
+import javax.swing.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            // Obtenha uma instância de Connection usando o método getConnection() da classe MyConnection
-            MyConnection.getConnection();
+        // Obtenha uma instância de Connection usando o método getConnection() da classe MyConnection
+        MyConnection.getConnection();
 
-            TaskDAO taskDAO = new TaskDAO();
+        TaskDAO taskDAO = new TaskDAO();
 
-            // Solicite ao usuário que insira seu nome de usuário e senha
-            System.out.print("Digite o nome de usuário: ");
-            String username = scanner.nextLine();
+        // Solicitar ao usuário que insira seu nome de usuário e senha usando JOptionPane
+        String username = JOptionPane.showInputDialog("Digite o nome de usuario:");
+        String password = JOptionPane.showInputDialog("Digite a senha:");
 
-            System.out.print("Digite a senha: ");
-            String password = scanner.nextLine();
+        try {
+            // Chame o método authenticateUser da classe MyConnection para autenticar o usuário
+            UserModel authenticatedUser = MyConnection.authenticateUser(username, password);
 
-            try {
-                // Chame o método authenticateUser da classe MyConnection para autenticar o usuário
-                UserModel authenticatedUser = MyConnection.authenticateUser(username, password);
+            // Se não ocorrer uma exceção, a autenticação foi bem-sucedida
+            JOptionPane.showMessageDialog(null, "Usuario autenticado com sucesso!");
 
-                // Se não ocorrer uma exceção, a autenticação foi bem-sucedida
-                System.out.println("Usuário autenticado com sucesso!");
+            // Exibir um menu interativo
+            int choice;
+            do {
+                String[] options = {"Criar nova tarefa", "Listar tarefas", "Sair"};
+                choice = JOptionPane.showOptionDialog(null, "Escolha uma opcao:", "Menu",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                        null, options, options[0]);
 
-                // Exiba um menu interativo
-                int choice;
-                do {
-                    System.out.println("Escolha uma opção:");
-                    System.out.println("1. Criar nova tarefa");
-                    System.out.println("2. Listar tarefas");
-                    System.out.println("0. Sair");
-                    System.out.print("Opção: ");
-                    choice = scanner.nextInt();
-                    scanner.nextLine(); // Consumir a quebra de linha pendente
+                switch (choice) {
+                    case 0:
+                        // Solicitar ao usuário que insira os dados da tarefa usando JOptionPane
+                        String title = JOptionPane.showInputDialog("Titulo:");
+                        String description = JOptionPane.showInputDialog("Descricao:");
+                        String priority = JOptionPane.showInputDialog("Prioridade:");
 
-                    switch (choice) {
-                        case 1:
-                            // Solicite ao usuário que insira os dados da tarefa
-                            System.out.println("Digite os detalhes da tarefa:");
+                        // Criar uma nova tarefa com os dados fornecidos
+                        TaskModel newTask = new TaskModel();
+                        newTask.setTitle(title);
+                        newTask.setDescription(description);
+                        newTask.setPriority(priority);
+                        newTask.setDateEnd(new Date());
+                        newTask.setUserID(authenticatedUser.getUserID()); // Define o UserID com o ID do usuário autenticado
 
-                            System.out.print("Título: ");
-                            String title = scanner.nextLine();
+                        // Exibir informações da tarefa antes de inserir
+                        TaskDAO.returnTask(newTask);
 
-                            System.out.print("Descrição: ");
-                            String description = scanner.nextLine();
+                        // Dar ao usuário a opção de confirmar ou voltar ao início
+                        Object[] confirmOptions = {"Confirmar e inserir a tarefa", "Voltar ao inicio sem inserir"};
+                        int confirmOption = JOptionPane.showOptionDialog(null,
+                                "Escolha uma opcao:", "Confirmacao", JOptionPane.DEFAULT_OPTION,
+                                JOptionPane.PLAIN_MESSAGE, null, confirmOptions, confirmOptions[0]);
 
-                            System.out.print("Prioridade: ");
-                            String priority = scanner.nextLine();
+                        if (confirmOption == 0) {
+                            // Inserir a nova tarefa no banco de dados
+                            TaskModel insertedTask = taskDAO.insert(newTask);
 
-                            // Criar uma nova tarefa com os dados fornecidos
-                            TaskModel newTask = new TaskModel();
-                            newTask.setTitle(title);
-                            newTask.setDescription(description);
-                            newTask.setPriority(priority);
-                            newTask.setDateEnd(new Date());
-                            newTask.setUserID(authenticatedUser.getUserID()); // Define o UserID com o ID do usuário autenticado
-
-                            // Exibir informações da tarefa antes de inserir
-                            System.out.println("\nConfirme os detalhes da tarefa:");
-                            TaskDAO.returnTask(newTask);
-
-                            // Dar ao usuário a opção de confirmar ou voltar ao início
-                            System.out.println("Escolha uma opção:");
-                            System.out.println("1. Confirmar e inserir a tarefa");
-                            System.out.println("0. Voltar ao início sem inserir");
-                            System.out.print("Opção: ");
-                            int confirmOption = scanner.nextInt();
-                            scanner.nextLine(); // Consumir a quebra de linha pendente
-
-                            if (confirmOption == 1) {
-                                // Inserir a nova tarefa no banco de dados
-                                TaskModel insertedTask = taskDAO.insert(newTask);
-
-                                if (insertedTask != null) {
-                                    System.out.println("Tarefa criada com sucesso!");
-                                } else {
-                                    System.out.println("Falha ao criar a tarefa.");
-                                }
-                            } else if (confirmOption == 0) {
-                                System.out.println("Retornando ao início. Nenhuma tarefa inserida.");
+                            if (insertedTask != null) {
+                                JOptionPane.showMessageDialog(null, "Tarefa criada com sucesso!");
                             } else {
-                                System.out.println("Opção inválida. Retornando ao início. Nenhuma tarefa inserida.");
+                                JOptionPane.showMessageDialog(null, "Falha ao criar a tarefa.");
                             }
-                            break;
+                        } else if (confirmOption == 1) {
+                            JOptionPane.showMessageDialog(null, "Retornando ao inicio. Nenhuma tarefa inserida.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Opção invalida. Retornando ao inicio. Nenhuma tarefa inserida.");
+                        }
+                        break;
 
-                        case 2:
-                            // Recuperar e exibir todas as tarefas do usuário
-                            List<TaskModel> userTasks = taskDAO.findByUserID(authenticatedUser.getUserID());
-                            System.out.println("Tarefas do usuário " + authenticatedUser.getUsername());
-                            TaskDAO.returnTaskList(userTasks);
-                            break;
+                    case 1:
+                        // Recuperar e exibir todas as tarefas do usuário
+                        List<TaskModel> userTasks = taskDAO.findByUserID(authenticatedUser.getUserID());
+                        StringBuilder taskList = new StringBuilder("Tarefas do usuário " + authenticatedUser.getUsername() + ":\n");
+                        for (TaskModel task : userTasks) {
+                            taskList.append(TaskDAO.toString(task)).append("\n");
+                        }
+                        JOptionPane.showMessageDialog(null, taskList.toString());
+                        break;
 
-                        case 0:
-                            System.out.println("Saindo do programa. Até logo!");
-                            break;
+                    case 2:
+                        JOptionPane.showMessageDialog(null, "Saindo do programa. Até logo!");
+                        break;
 
-                        default:
-                            System.out.println("Opção inválida. Tente novamente.");
-                            break;
-                    }
-                } while (choice != 0);
+                    default:
+                        JOptionPane.showMessageDialog(null, "Opção inválida. Tente novamente.");
+                        break;
+                }
+            } while (choice != 2);
 
-            } catch (UserNotFoundException e) {
-                // Se a exceção UserNotFoundException for lançada, a autenticação falhou por causa do usuário
-                System.out.println("Usuário não encontrado. Autenticação falhou.");
+        } catch (UserNotFoundException e) {
+            // Se a exceção UserNotFoundException for lançada, a autenticação falhou por causa do usuário
+            JOptionPane.showMessageDialog(null, e.getMessage());
 
-            } catch (InvalidPasswordException e) {
-                // Se a exceção InvalidPasswordException for lançada, a autenticação falhou por causa da senha
-                System.out.println("Senha inválida. Autenticação falhou.");
-            }
+        } catch (InvalidPasswordException e) {
+            // Se a exceção InvalidPasswordException for lançada, a autenticação falhou por causa da senha
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }
 }

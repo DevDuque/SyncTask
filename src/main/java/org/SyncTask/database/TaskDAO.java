@@ -199,15 +199,20 @@ public class TaskDAO extends DAO<TaskModel> {
     }
 
     @Override
-    public boolean delete(TaskModel OBJ) {
+    public boolean delete(UUID taskID) {
         // Implementação ausente: Deve ser usada para excluir uma tarefa do banco de dados
         return false;
     }
 
     public static void returnTaskList(List<TaskModel> taskList) {
-        // Imprimir os detalhes das tarefas na lista
-        for (TaskModel task : taskList) {
-            returnTask(task);
+        // Verificar se a lista de tarefas está vazia
+        if (taskList.isEmpty()) {
+            System.out.println("Sem tarefas registradas, comece a criar tarefas, aqui!");
+        } else {
+            // Imprimir os detalhes das tarefas na lista
+            for (TaskModel task : taskList) {
+                returnTask(task);
+            }
         }
     }
 
@@ -221,5 +226,14 @@ public class TaskDAO extends DAO<TaskModel> {
         System.out.println("DateEnd: " + task.getDateEnd());
         System.out.println("Priority: " + task.getPriority());
         System.out.println();
+    }
+
+    public static String toString(TaskModel task) {
+        return "ID: " + task.getTaskID() +
+                "\nTítulo: " + task.getTitle() +
+                "\nDescrição: " + task.getDescription() +
+                "\nPrioridade: " + task.getPriority() +
+                "\nData de Término: " + task.getDateEnd() +
+                "\n----------";
     }
 }

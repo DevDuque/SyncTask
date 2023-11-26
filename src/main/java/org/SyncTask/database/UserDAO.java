@@ -3,10 +3,7 @@ package org.SyncTask.database;
 import org.SyncTask.connection.MyConnection;
 import org.SyncTask.models.UserModel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -158,8 +155,26 @@ public class UserDAO extends DAO<UserModel> {
 
     // Excluir um usuário do banco de dados
     @Override
-    public boolean delete(UserModel OBJ) {
-        return false;
+    public boolean delete(UUID userID) {
+        // Lógica para deletar um usuário com o ID fornecido
+        String deleteQuery = "DELETE FROM UserTable WHERE UserID = ?";
+        try {
+            PreparedStatement preparedStatement = this.myConnection.prepareStatement(deleteQuery);
+
+            // Setar o parâmetro do ID como uma String
+            preparedStatement.setString(1, userID.toString());
+
+            // Executar a instrução DELETE
+            int rowsDeleted = preparedStatement.executeUpdate();
+
+            // Verificar se a deleção foi bem-sucedida
+            return rowsDeleted > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Erro durante a deleção do usuário: " + e.getMessage());
+            return false;
+        }
     }
 
     public static void returnUser(UserModel user) {
