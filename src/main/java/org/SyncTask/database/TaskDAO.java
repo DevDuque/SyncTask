@@ -3,6 +3,8 @@ package org.SyncTask.database;
 import org.SyncTask.connection.MyConnection;
 import org.SyncTask.models.TaskModel;
 
+import org.SyncTask.exceptions.InvalidTaskDateException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -135,6 +137,11 @@ public class TaskDAO extends DAO<TaskModel> {
 
         // Fazendo um try/catch para lançamento de Exceptions
         try {
+
+            // Verificar se DateEnd é maior que CreatedAt
+            if (task.getDateEnd().before(task.getCreatedAt())) {
+                throw new InvalidTaskDateException("Erro: A data de término da tarefa não pode ser anterior à data de criação.");
+            }
             // Preparando a declaração SQL com a capacidade de recuperar chaves geradas
             PreparedStatement ps = this.myConnection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
 
@@ -165,6 +172,10 @@ public class TaskDAO extends DAO<TaskModel> {
             // Lidando com exceções SQL, imprimindo uma mensagem de erro
             System.err.println("Erro ao criar tarefa: " + e.getMessage());
             e.printStackTrace(); // Adicionando rastreamento completo da exceção
+        } catch (InvalidTaskDateException e) {
+            // Lidando com exceções SQL, imprimindo uma mensagem de erro caso o DateEnd seja maior que CreatedAt
+            System.err.println("Erro ao criar tarefa: " + e.getMessage());
+            return null;
         }
 
         // Retornando a tarefa inserida ou null em caso de falha
