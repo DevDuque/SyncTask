@@ -8,6 +8,8 @@ import org.SyncTask.models.UserModel;
 import org.SyncTask.database.TaskDAO;
 
 import javax.swing.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -44,13 +46,24 @@ public class Main {
                         String title = JOptionPane.showInputDialog("Titulo:");
                         String description = JOptionPane.showInputDialog("Descricao:");
                         String priority = JOptionPane.showInputDialog("Prioridade:");
+                        String dateEndStr = JOptionPane.showInputDialog("Data de Termino (formato dd/mm/yyyy):");
+
+                        // Convertendo a string da data de término para um objeto Date
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        Date dateEnd = null;
+                        try {
+                            dateEnd = dateFormat.parse(dateEndStr);
+                        } catch (ParseException e) {
+                            JOptionPane.showMessageDialog(null, "Formato de data inválido. Certifique-se de usar o formato dd/mm/yyyy.");
+                            return;
+                        }
 
                         // Criar uma nova tarefa com os dados fornecidos
                         TaskModel newTask = new TaskModel();
                         newTask.setTitle(title);
                         newTask.setDescription(description);
                         newTask.setPriority(priority);
-                        newTask.setDateEnd(new Date());
+                        newTask.setDateEnd(dateEnd);
                         newTask.setUserID(authenticatedUser.getUserID()); // Define o UserID com o ID do usuário autenticado
 
                         String taskDetailsString = TaskDAO.returnTask(newTask);
