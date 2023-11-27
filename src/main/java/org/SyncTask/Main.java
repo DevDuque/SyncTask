@@ -81,73 +81,60 @@ public class Main {
                         // Exibir um menu interativo
                         int choice;
                         do {
-                            String[] options = {"Criar nova tarefa", "Listar tarefas", "Sair"};
+                            String[] options = {"Criar nova tarefa", "Listar tarefas", "Sair da sua conta"};
                             choice = JOptionPane.showOptionDialog(null, "Escolha uma opcao:", "Menu",
                                     JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                                     null, options, options[0]);
 
-                            switch (choice) {
-                                case 0:
-                                    // Solicitar ao usuário que insira os dados da tarefa usando JOptionPane
-                                    String title = JOptionPane.showInputDialog("Titulo:");
-                                    String description = JOptionPane.showInputDialog("Descricao:");
-                                    String priority = JOptionPane.showInputDialog("Prioridade:");
-                switch (choice) {
-                    case 0:
-                        // Solicitar ao usuário que insira os dados da tarefa usando JOptionPane
-                        String title = JOptionPane.showInputDialog("Titulo:");
-                        String description = JOptionPane.showInputDialog("Descricao:");
-                        String priority = JOptionPane.showInputDialog("Prioridade:");
-                        String dateEndStr = JOptionPane.showInputDialog("Data de Termino (formato dd/mm/yyyy):");
+                        switch (choice) {
+                            case 0:
+                                // Solicitar ao usuário que insira os dados da tarefa usando JOptionPane
+                                String title = JOptionPane.showInputDialog("Titulo:");
+                                String description = JOptionPane.showInputDialog("Descricao:");
+                                String priority = JOptionPane.showInputDialog("Prioridade:");
+                                String dateEndStr = JOptionPane.showInputDialog("Data de Termino (formato dd/mm/yyyy):");
 
-                        // Convertendo a string da data de término para um objeto Date
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                        Date dateEnd = null;
-                        try {
-                            dateEnd = dateFormat.parse(dateEndStr);
-                        } catch (ParseException e) {
-                            JOptionPane.showMessageDialog(null, "Formato de data inválido. Certifique-se de usar o formato dd/mm/yyyy.");
-                            return;
-                        }
+                                // Convertendo a string da data de término para um objeto Date
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                                Date dateEnd = null;
+                                try {
+                                    dateEnd = dateFormat.parse(dateEndStr);
+                                } catch (ParseException e) {
+                                    JOptionPane.showMessageDialog(null, "Formato de data inválido. Certifique-se de usar o formato dd/mm/yyyy.");
+                                    return;
+                                }
 
                                     // Criar uma nova tarefa com os dados fornecidos
                                     TaskModel newTask = new TaskModel();
                                     newTask.setTitle(title);
                                     newTask.setDescription(description);
                                     newTask.setPriority(priority);
-                                    newTask.setDateEnd(new Date());
+                                    newTask.setDateEnd(dateEnd);
                                     newTask.setUserID(authenticatedUser.getUserID()); // Define o UserID com o ID do usuário autenticado
-                        // Criar uma nova tarefa com os dados fornecidos
-                        TaskModel newTask = new TaskModel();
-                        newTask.setTitle(title);
-                        newTask.setDescription(description);
-                        newTask.setPriority(priority);
-                        newTask.setDateEnd(dateEnd);
-                        newTask.setUserID(authenticatedUser.getUserID()); // Define o UserID com o ID do usuário autenticado
 
                                     String taskDetailsString = TaskDAO.returnTask(newTask);
 
                                     // Dar ao usuário a opção de confirmar ou voltar ao início
-                                    Object[] confirmOptions = {"Confirmar e inserir a tarefa", "Voltar ao inicio sem inserir"};
-                                    int confirmOption = JOptionPane.showOptionDialog(null,
-                                            "Tarefa a ser inserida \n" + taskDetailsString, "Confirmacao", JOptionPane.DEFAULT_OPTION,
-                                            JOptionPane.PLAIN_MESSAGE, null, confirmOptions, confirmOptions[0]);
+                                Object[] confirmOptions = {"Confirmar e inserir a tarefa", "Voltar ao inicio sem inserir"};
+                                int confirmOption = JOptionPane.showOptionDialog(null,
+                                                    "Tarefa a ser inserida \n" + taskDetailsString, "Confirmacao", JOptionPane.DEFAULT_OPTION,
+                                                    JOptionPane.PLAIN_MESSAGE, null, confirmOptions, confirmOptions[0]);
 
-                                    if (confirmOption == 0) {
-                                        // Inserir a nova tarefa no banco de dados
-                                        TaskModel insertedTask = taskDAO.insert(newTask);
+                                if (confirmOption == 0) {
+                                    // Inserir a nova tarefa no banco de dados
+                                    TaskModel insertedTask = taskDAO.insert(newTask);
 
-                                        if (insertedTask != null) {
-                                            JOptionPane.showMessageDialog(null, "Tarefa criada com sucesso!");
-                                        } else {
-                                            JOptionPane.showMessageDialog(null, "Falha ao criar a tarefa.");
-                                        }
-                                    } else if (confirmOption == 1) {
-                                        JOptionPane.showMessageDialog(null, "Retornando ao inicio. Nenhuma tarefa inserida.");
+                                    if (insertedTask != null) {
+                                        JOptionPane.showMessageDialog(null, "Tarefa criada com sucesso!");
                                     } else {
-                                        JOptionPane.showMessageDialog(null, "Opcao invalida. Retornando ao inicio. Nenhuma tarefa inserida.");
-                                    }
-                                    break;
+                                        JOptionPane.showMessageDialog(null, "Falha ao criar a tarefa.");
+                                                }
+                                } else if (confirmOption == 1) {
+                                    JOptionPane.showMessageDialog(null, "Retornando ao inicio. Nenhuma tarefa inserida.");
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Opcao invalida. Retornando ao inicio. Nenhuma tarefa inserida.");
+                                }
+                                break;
 
                                 case 1:
                                     // Recuperar e exibir todas as tarefas do usuário
