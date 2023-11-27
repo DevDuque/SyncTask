@@ -6,9 +6,7 @@ import org.SyncTask.models.UserModel;
 
 // Importações do Java
 import java.util.List;
-import java.util.UUID;
 
-import static org.SyncTask.database.UserDAO.returnUser;
 import static org.SyncTask.database.UserDAO.returnUserList;
 
 public class MainUser {
