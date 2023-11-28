@@ -21,8 +21,293 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class Main {
+
+    // Função para criar usuário
+    private static void createUser(UserDAO userDAO) {
+        String newName = JOptionPane.showInputDialog("Digite o seu nome:");
+        String newUsername = JOptionPane.showInputDialog("Digite o nome de usuario:");
+        String newPassword = JOptionPane.showInputDialog("Digite a sua senha:");
+
+        int adminChoice = JOptionPane.showConfirmDialog(null, "Voce e um administrador?" , "Escolha", JOptionPane.YES_NO_OPTION);
+        boolean isAdmin = (adminChoice == JOptionPane.YES_OPTION);
+
+        UserModel newUser = new UserModel();
+        newUser.setName(newName);
+        newUser.setUsername(newUsername);
+        newUser.setPassword(newPassword);
+        newUser.setAdmin(isAdmin);
+
+        UserModel userCreated = userDAO.insert(newUser);
+
+        if (userCreated != null) {
+            JOptionPane.showMessageDialog(null, "Usuario criado com sucesso! \nNome: " + newUser.getName() + "\nUserID = " + newUser.getUserID() + "\n");
+        } else {
+            JOptionPane.showMessageDialog(null, "Erro ao criar um usuario!");
+        }
+    }
+
+    // Função para escolher uma tarefa de uma lista
+    private static TaskModel chooseTaskFromList(List<TaskModel> taskList) {
+        if (taskList.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Sem tarefas registradas.");
+            return null;
+        }
+
+        StringBuilder taskOptions = new StringBuilder("Escolha uma tarefa:\n");
+        for (int i = 0; i < taskList.size(); i++) {
+            taskOptions.append(i + 1).append(". ").append(TaskDAO.returnTask(taskList.get(i))).append("\n");
+        }
+
+        int taskChoice;
+        try {
+            taskChoice = Integer.parseInt(JOptionPane.showInputDialog(taskOptions.toString())) - 1;
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Escolha invalida.");
+            return null;
+        }
+
+        if (taskChoice >= 0 && taskChoice < taskList.size()) {
+            return taskList.get(taskChoice);
+        } else {
+            JOptionPane.showMessageDialog(null, "Escolha invalida.");
+            return null;
+        }
+    }
+
+    // Entrar no programa com login
+    private static void loginUser(TaskDAO taskDAO, UserDAO userDAO) {
+        String username = JOptionPane.showInputDialog("Digite o nome de usuario:");
+        String password = JOptionPane.showInputDialog("Digite sua senha:");
+
+        try {
+            UserModel authenticatedUser = MyConnection.authenticateUser(username, password);
+            JOptionPane.showMessageDialog(null, "Usuario autenticado com sucesso!");
+
+            int choice;
+            do {
+                String[] options = {"Criar nova tarefa", "Listar tarefas", "Editar tarefa", "Editar conta", "Deletar tarefa", "Deletar conta", "Sair da sua conta"};
+                choice = JOptionPane.showOptionDialog(null, "Escolha uma opcao:", "Menu",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                        null, options, options[0]);
+
+                switch (choice) {
+                    case 0:
+                        createTask(taskDAO, authenticatedUser);
+                        break;
+
+                    case 1:
+                       listTask(taskDAO, authenticatedUser);
+                        break;
+
+                    case 2:
+                        updateTask(taskDAO, authenticatedUser);
+                        break;
+
+                    case 3:
+                        updateUser(userDAO, authenticatedUser);
+                        break;
+
+                    case 4:
+                        deleteTask(taskDAO, authenticatedUser);
+                        break;
+
+                    case 5:
+                        deleteUser(userDAO, authenticatedUser);
+                        break;
+
+                    case 6:
+                        JOptionPane.showMessageDialog(null, "Saindo da conta..." + "Ate logo " + authenticatedUser.getUsername() + "!");
+                        break;
+
+                    default:
+                        JOptionPane.showMessageDialog(null, "Opcao invalida. Tente novamente.");
+                        break;
+                }
+            } while (choice != 6);
+
+        } catch (UserNotFoundException | InvalidPasswordException e) {
+            JOptionPane.showMessageDialog(null, "Falha na autenticacao: " + e.getMessage());
+        }
+    }
+
+    private static void createTask(TaskDAO taskDAO, UserModel authenticatedUser) {
+        // Solicitar ao usuário que insira os dados da tarefa usando JOptionPane
+        String title = JOptionPane.showInputDialog("Titulo:");
+        String description = JOptionPane.showInputDialog("Descricao:");
+        String priority = JOptionPane.showInputDialog("Prioridade:");
+        String dateEndStr = JOptionPane.showInputDialog("Data de Termino (formato dd/mm/yyyy):");
+
+        // Convertendo a string da data de término para um objeto Date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date dateEnd = null;
+        try {
+            dateEnd = dateFormat.parse(dateEndStr);
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(null, "Formato de data inválido. Certifique-se de usar o formato dd/mm/yyyy.");
+            return;
+        }
+
+        // Criar uma nova tarefa com os dados fornecidos
+        TaskModel newTask = new TaskModel();
+        newTask.setTitle(title);
+        newTask.setDescription(description);
+        newTask.setPriority(priority);
+        newTask.setDateEnd(dateEnd);
+        newTask.setUserID(authenticatedUser.getUserID()); // Define o UserID com o ID do usuário autenticado
+
+        String taskDetailsString = TaskDAO.returnTask(newTask);
+
+        // Dar ao usuário a opção de confirmar ou voltar ao início
+        Object[] confirmOptions = {"Confirmar e inserir a tarefa", "Voltar ao inicio sem inserir"};
+        int confirmOption = JOptionPane.showOptionDialog(null,
+                "Tarefa a ser inserida \n" + taskDetailsString, "Confirmacao", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE, null, confirmOptions, confirmOptions[0]);
+
+        if (confirmOption == 0) {
+            // Inserir a nova tarefa no banco de dados
+            TaskModel insertedTask = taskDAO.insert(newTask);
+
+            if (insertedTask != null) {
+                JOptionPane.showMessageDialog(null, "Tarefa criada com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Falha ao criar a tarefa.");
+            }
+        } else if (confirmOption == 1) {
+            JOptionPane.showMessageDialog(null, "Retornando ao inicio. Nenhuma tarefa inserida.");
+        } else {
+            JOptionPane.showMessageDialog(null, "Opcao invalida. Retornando ao inicio. Nenhuma tarefa inserida.");
+        }
+    }
+
+    private static void listTask(TaskDAO taskDAO, UserModel authenticatedUser) {
+        // Recuperar e exibir todas as tarefas do usuário
+        List<TaskModel> userTasks = taskDAO.findByUserID(authenticatedUser.getUserID());
+        StringBuilder taskList = new StringBuilder("Tarefas do usuario " + authenticatedUser.getUsername() + ":\n");
+
+        if (!userTasks.isEmpty()) {
+            for (TaskModel task : userTasks) {
+                taskList.append(TaskDAO.returnTask(task)).append("\n");
+            }
+            JOptionPane.showMessageDialog(null, taskList.toString());
+        } else {
+            JOptionPane.showMessageDialog(null, "Sem tarefas registradas, comece a criar tarefas, aqui!");
+        }
+    }
+
+    // Atualizando uma tarefa
+    private static void updateTask(TaskDAO taskDAO, UserModel authenticatedUser) {
+        // Recuperar e exibir todas as tarefas do usuário
+        List<TaskModel> userTasks = taskDAO.findByUserID(authenticatedUser.getUserID());
+        TaskModel taskToUpdate = chooseTaskFromList(userTasks);
+
+        if (taskToUpdate != null) {
+            // Solicitar ao usuário as informações atualizadas
+            String newTitle = JOptionPane.showInputDialog("Novo Titulo:", taskToUpdate.getTitle());
+            String newDescription = JOptionPane.showInputDialog("Nova Descricao:", taskToUpdate.getDescription());
+            String newPriority = JOptionPane.showInputDialog("Nova Prioridade:", taskToUpdate.getPriority());
+            String newDateEndStr = JOptionPane.showInputDialog("Nova Data de Termino (formato dd/mm/yyyy):", taskToUpdate.getDateEnd());
+
+            // Convertendo a string da nova data de término para um objeto Date
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            Date newDateEnd = null;
+            try {
+                newDateEnd = dateFormat.parse(newDateEndStr);
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(null, "Formato de data invalido. Certifique-se de usar o formato dd/mm/yyyy.");
+                return;
+            }
+
+            // Atualizar os dados da tarefa
+            taskToUpdate.setTitle(newTitle);
+            taskToUpdate.setDescription(newDescription);
+            taskToUpdate.setPriority(newPriority);
+            taskToUpdate.setDateEnd(newDateEnd);
+
+            // Atualizar no banco de dados usando o método update da classe TaskDAO
+            boolean updatedTask = taskDAO.update(taskToUpdate);
+
+            if (updatedTask) {
+                JOptionPane.showMessageDialog(null, "Tarefa atualizada com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Falha ao atualizar a tarefa.");
+            }
+        }
+    }
+
+    // Atualizando usuário
+// Atualizando usuário
+    private static void updateUser(UserDAO userDAO, UserModel authenticatedUser) {
+        // Exibir os dados atuais do usuário
+        StringBuilder currentUserDetails = new StringBuilder("Dados atuais do usuario:\n");
+        currentUserDetails.append("Nome: ").append(authenticatedUser.getName()).append("\n");
+        currentUserDetails.append("Nome de Usuario: ").append(authenticatedUser.getUsername()).append("\n");
+
+        JOptionPane.showMessageDialog(null, currentUserDetails.toString(), "Dados Atuais", JOptionPane.PLAIN_MESSAGE);
+
+        // Solicitar ao usuário as informações atualizadas
+        String newName = JOptionPane.showInputDialog("Novo Nome:", authenticatedUser.getName());
+        String newUsername = JOptionPane.showInputDialog("Novo Nome de Usuario:", authenticatedUser.getUsername());
+
+        // Atualizar os dados do usuário autenticado
+        authenticatedUser.setName(newName);
+        authenticatedUser.setUsername(newUsername);
+
+        // Atualizar no banco de dados
+        boolean updatedUser = userDAO.update(authenticatedUser);
+
+        if (updatedUser) {
+            // Exibir os dados atualizados do usuário
+            StringBuilder updatedUserDetails = new StringBuilder("Dados atualizados do usuario:\n");
+            updatedUserDetails.append("Nome: ").append(authenticatedUser.getName()).append("\n");
+            updatedUserDetails.append("Nome de Usuario: ").append(authenticatedUser.getUsername()).append("\n");
+
+            JOptionPane.showMessageDialog(null, updatedUserDetails.toString(), "Dados Atualizados", JOptionPane.PLAIN_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Falha ao atualizar os dados do usuario.");
+        }
+    }
+
+
+    // Deletando tarefa
+    private static void deleteTask(TaskDAO taskDAO, UserModel authenticatedUser) {
+        // Deletar tarefa
+        // Recuperar e exibir todas as tarefas do usuário
+        List<TaskModel> userTasksToDelete = taskDAO.findByUserID(authenticatedUser.getUserID());
+        TaskModel taskToDelete = chooseTaskFromList(userTasksToDelete);
+
+        if (taskToDelete != null) {
+            int confirmDeleteTask = JOptionPane.showConfirmDialog(null, "Tem certeza de que deseja deletar esta tarefa?", "Confirmação", JOptionPane.YES_NO_OPTION);
+
+            if (confirmDeleteTask == JOptionPane.YES_OPTION) {
+                boolean deletedTask = taskDAO.delete(taskToDelete.getTaskID());
+
+                if (deletedTask) {
+                    JOptionPane.showMessageDialog(null, "Tarefa deletada com sucesso!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Falha ao deletar a tarefa.");
+                }
+            }
+        }
+    }
+
+    // Deletar Conta
+    private static void deleteUser(UserDAO userDAO, UserModel authenticatedUser) {
+        // Deletar conta
+        int confirmDelete = JOptionPane.showConfirmDialog(null, "Tem certeza de que deseja deletar sua conta?", "Confirmação", JOptionPane.YES_NO_OPTION);
+        if (confirmDelete == JOptionPane.YES_OPTION) {
+            // Deletar o próprio usuário autenticado
+            boolean deletedUser = userDAO.delete(authenticatedUser.getUserID());
+
+            if (deletedUser) {
+                JOptionPane.showMessageDialog(null, "Sua conta foi deletada com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Falha ao deletar sua conta.");
+            }
+        }
+    }
 
     public static void main(String[] args) {
         // Obtenha uma instância de Connection usando o método getConnection() da classe MyConnection
@@ -42,124 +327,12 @@ public class Main {
 
             switch (loginChoice) {
                 case 0:
-                    // Cadastrando um novo usuário
-                    String newName = JOptionPane.showInputDialog("Digite o seu nome:");
-                    String newUsername = JOptionPane.showInputDialog("Digite o nome de usuario:");
-                    String newPassword = JOptionPane.showInputDialog("Digite a sua senha:");
-
-                    // Adicionando escolha de admin
-                    int adminChoice = JOptionPane.showConfirmDialog(null, "Voce e um administrador?" , "Escolha", JOptionPane.YES_NO_OPTION);
-
-                    boolean isAdmin = (adminChoice == JOptionPane.YES_OPTION);
-
-                    // Criando um novo usuário
-                    UserModel newUser = new UserModel();
-                    newUser.setName(newName);
-                    newUser.setUsername(newUsername);
-                    newUser.setPassword(newPassword);
-                    newUser.setAdmin(isAdmin);
-
-                    // Salvando no banco usando UserDAO
-                    UserModel userCreated = userDAO.insert(newUser);
-
-                    if(userCreated != null) {
-                        JOptionPane.showMessageDialog(null, "Usuario criado com sucesso! \nNome: " + newUser.getName() + "\nUserID = " + newUser.getUserID() + "\n");
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Erro ao criar um usuario!");
-                    }
-                    break;
+                    createUser(userDAO);
+                break;
 
                 case 1:
-                    // Logando usuário
-                    String username = JOptionPane.showInputDialog("Digite o nome de usuario:");
-                    String password = JOptionPane.showInputDialog("Digite sua senha:");
-
-                    try {
-                        UserModel authenticatedUser = MyConnection.authenticateUser(username, password);
-                        JOptionPane.showMessageDialog(null, "Usuario autenticado com sucesso!");
-
-                        // Exibir um menu interativo
-                        int choice;
-                        do {
-                            String[] options = {"Criar nova tarefa", "Listar tarefas", "Sair da sua conta"};
-                            choice = JOptionPane.showOptionDialog(null, "Escolha uma opcao:", "Menu",
-                                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                                    null, options, options[0]);
-
-                        switch (choice) {
-                            case 0:
-                                // Solicitar ao usuário que insira os dados da tarefa usando JOptionPane
-                                String title = JOptionPane.showInputDialog("Titulo:");
-                                String description = JOptionPane.showInputDialog("Descricao:");
-                                String priority = JOptionPane.showInputDialog("Prioridade:");
-                                String dateEndStr = JOptionPane.showInputDialog("Data de Termino (formato dd/mm/yyyy):");
-
-                                // Convertendo a string da data de término para um objeto Date
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                                Date dateEnd = null;
-                                try {
-                                    dateEnd = dateFormat.parse(dateEndStr);
-                                } catch (ParseException e) {
-                                    JOptionPane.showMessageDialog(null, "Formato de data inválido. Certifique-se de usar o formato dd/mm/yyyy.");
-                                    return;
-                                }
-
-                                    // Criar uma nova tarefa com os dados fornecidos
-                                    TaskModel newTask = new TaskModel();
-                                    newTask.setTitle(title);
-                                    newTask.setDescription(description);
-                                    newTask.setPriority(priority);
-                                    newTask.setDateEnd(dateEnd);
-                                    newTask.setUserID(authenticatedUser.getUserID()); // Define o UserID com o ID do usuário autenticado
-
-                                    String taskDetailsString = TaskDAO.returnTask(newTask);
-
-                                    // Dar ao usuário a opção de confirmar ou voltar ao início
-                                Object[] confirmOptions = {"Confirmar e inserir a tarefa", "Voltar ao inicio sem inserir"};
-                                int confirmOption = JOptionPane.showOptionDialog(null,
-                                                    "Tarefa a ser inserida \n" + taskDetailsString, "Confirmacao", JOptionPane.DEFAULT_OPTION,
-                                                    JOptionPane.PLAIN_MESSAGE, null, confirmOptions, confirmOptions[0]);
-
-                                if (confirmOption == 0) {
-                                    // Inserir a nova tarefa no banco de dados
-                                    TaskModel insertedTask = taskDAO.insert(newTask);
-
-                                    if (insertedTask != null) {
-                                        JOptionPane.showMessageDialog(null, "Tarefa criada com sucesso!");
-                                    } else {
-                                        JOptionPane.showMessageDialog(null, "Falha ao criar a tarefa.");
-                                                }
-                                } else if (confirmOption == 1) {
-                                    JOptionPane.showMessageDialog(null, "Retornando ao inicio. Nenhuma tarefa inserida.");
-                                } else {
-                                    JOptionPane.showMessageDialog(null, "Opcao invalida. Retornando ao inicio. Nenhuma tarefa inserida.");
-                                }
-                                break;
-
-                                case 1:
-                                    // Recuperar e exibir todas as tarefas do usuário
-                                    List<TaskModel> userTasks = taskDAO.findByUserID(authenticatedUser.getUserID());
-                                    StringBuilder taskList = new StringBuilder("Tarefas do usuario " + authenticatedUser.getUsername() + ":\n");
-                                    for (TaskModel task : userTasks) {
-                                        taskList.append(TaskDAO.toString(task)).append("\n");
-                                    }
-                                    JOptionPane.showMessageDialog(null, taskList.toString());
-                                    break;
-
-                                case 2:
-                                    JOptionPane.showMessageDialog(null, "Saindo do programa. Ate logo!");
-                                    break;
-
-                                default:
-                                    JOptionPane.showMessageDialog(null, "Opcao invalida. Tente novamente.");
-                                    break;
-                            }
-                        } while (choice != 2);
-
-                    } catch (UserNotFoundException | InvalidPasswordException e) {
-                        JOptionPane.showMessageDialog(null, "Falha na autenticacao: " + e.getMessage());
-                    }
-                    break;
+                    loginUser(taskDAO, userDAO);
+                break;
 
                 case 2:
                     // Sair do programa

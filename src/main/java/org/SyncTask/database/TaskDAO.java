@@ -187,7 +187,8 @@ public class TaskDAO extends DAO<TaskModel> {
         // Atualizar uma tarefa no banco de dados
         boolean response = false;
 
-        String updateQuery = "UPDATE TaskTable SET Title = ?, Description = ?,  Priority = ?, DateEnd = ?";
+        String updateQuery = "UPDATE TaskTable SET Title = ?, Description = ?, Priority = ?, DateEnd = ? WHERE TaskID = ?";
+
 
         try {
             PreparedStatement ps = this.myConnection.prepareStatement(updateQuery);
@@ -195,6 +196,8 @@ public class TaskDAO extends DAO<TaskModel> {
             ps.setString(1, task.getTitle());
             ps.setString(2, task.getDescription());
             ps.setString(3, task.getPriority());
+            ps.setString(5, task.getTaskID().toString());
+
 
             // Convertendo java.util.Date para java.sql.Date
             java.sql.Date sqlDate = new java.sql.Date(task.getDateEnd().getTime());
@@ -255,14 +258,5 @@ public class TaskDAO extends DAO<TaskModel> {
 
         // Retornar a String com os detalhes da tarefa
         return taskDetails.toString();
-    }
-
-    public static String toString(TaskModel task) {
-        return "ID: " + task.getTaskID() +
-                "\nTitulo: " + task.getTitle() +
-                "\nDescricao: " + task.getDescription() +
-                "\nPrioridade: " + task.getPriority() +
-                "\nData de Termino: " + task.getDateEnd() +
-                "\n----------";
     }
 }
