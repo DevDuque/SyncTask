@@ -1,52 +1,48 @@
-# Trabalho Prático Final
+<p align="center">
+  <img src="./public/Capa.png" alt="Form page image" />
+  <img alt="License" src="https://img.shields.io/static/v1?label=license&message=MIT&color=49AA26&labelColor=000000">
+  
+  <br>
+  <a href="#-tecnologias">Tecnologias</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#-projeto">Projeto</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#-coltec">COLTEC</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  
+</p>
 
-**Até quatro integrantes**
+</br>
 
-**Data de apresentação: 04/12/2023**
+## 🚀 Tecnologias
+This project was developed with the following techs:
 
-**Valor: 30 pontos**
+💻 Código
+- JAVA
+- MySQL
 
-## Trabalho Integrador
+## 💻 Projeto
+Objetivo:
+Desenvolver um sistema utilizando conceitos de Programação Orientada a Objetos para armazenamento e leitura de informações em um banco de dados.
+o projeto SyncTask, uma aplicação que visa facilitar o gerenciamento de tarefas e projetos de forma sincronizada. Nosso sistema é construído com base nos princípios da Programação Orientada a Objetos e utiliza um banco de dados para armazenar e recuperar informações essenciais.
 
-O objetivo deste trabalho integrador consiste utilizar os conceitos vistos em Programação Orientada a Objetos para desenvolver um sistema que faça o armazenamento e leitura de informações a nível de banco de dados.
+### Banco de Dados: SyncTask
 
-Seu grupo deverá selecionar um dos temas propostos no trabalho de banco de dados e implementar as funcionalidades/requisitos listados.
+### Tabelas: UserTable: Armazena dados dos usuários. & TaskTable: Registra as tarefas associadas aos usuários.
 
-## Avaliação
+### Campos (UserTable): UserID, Name, Username, Password, CreatedAt, IsAdmin.
+### Campos (TaskTable): TaskID, UserID (chave estrangeira), Title, Description, DateEnd, Priority, CreatedAt.
 
-Seu grupo será avaliado com base nos seguintes critérios:
+## 🎓 COLTEC
+Requisitos:
+CRUD de dois tipos de dados.
 
-- Implementação das seguintes funcionalidades:
-    - CRUD de dois tipos de dados
-    - Cadastro & login de usuários
-    - Listagem/relatório de algum tipo de dado
-- Uso dos mecanismos de tratamento de exceção
-- Implementação de classes modelo para representação dos dados
-- Implementação de DAOs para comunicação com banco de dados
-- Uso de collections para manipular conjunto de dados
-- Uso dos mecanismos de Herança/Polimorfismo ao longo da implementação do sistema
+Cadastro e login de usuários.
 
-## Algumas dicas
+Listagem/relatório de algum tipo de dado.
 
-Algumas sugestões para auxiliá-los na organização e implementação do trabalho.
+Utilização de mecanismos de tratamento de exceção.
 
-**Não deixe para testar o trabalho apenas no final.**
-Você sempre precisará ajustar o código que você escreveu para resolver bugs e/ou lidar com situações que você não havia planejado.
-Se você deixar para testar o sistema somente no final, você irá terá muito pouco tempo para fazer esses ajustes.
-Minha sugestão: vá implementando o sistema por funcionalidade.
-Isto é, implemente uma funcionalidade por completo (GUI + funcionalidade + BD) e teste.
-Funcionou? excelente, parta para a próxima; não funcionou? corrija o bug e teste novamente!
+Implementação de classes modelo para representação dos dados.
 
-**Divida as tarefas entre os integrantes do grupo.**
-Aqui vale o lema "Dividir para Conquistar".
-O trabalho tem diversas funcionalidades, e cada funcionalidade deve ser implementada em diversos níveis (interface, banco de dados, etc).
-Divida a carga de trabalho entre o grupo de forma que consigam trabalhar em paralelo.
-Minha sugestão: (a) Organizem o sistema em tarefas, e trabalhem nas que não possuem (ou possuem pouca) dependência entre si; (b) priorizem a definição das interfaces (métodos & funções) das classes/módulos que vocês irão implementar.
-Dessa forma evitarão conflitos e conseguirão trabalhar em paralelo com mais facilidade.
+Implementação de DAOs para comunicação com o banco de dados.
 
-**Se atenha ao que foi planejado.**
-Lembre-se do princípio de Pareto: *Gasta-se 20% do tempo para implementar 80% do sistema, e 80% do tempo para implementar os restantes 20% do sistema.*
-Os detalhes importam, e fazem muita diferença no final; você irá corrigir muitos bugs e tratar muitos problemas não planejados (veja a dica anterior).
-**Portanto, NÃO INVENTE!**
-Sua prioridade é implementar o que foi pedido no trabalho.
-Implemente funcionalidade extras somente se tiver garantia de ter concluído o que foi pedido.
+Uso de collections para manipulação de conjunto de dados.
+Aplicação dos mecanismos de Herança/Polimorfismo ao longo da implementação do sistema.
