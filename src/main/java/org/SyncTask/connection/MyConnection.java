@@ -7,6 +7,8 @@ import org.SyncTask.models.UserModel;
 import java.sql.*;
 import java.util.UUID;
 
+import java.util.Date;
+
 public class MyConnection {
 
     private static Connection conn = null;
@@ -53,8 +55,10 @@ public class MyConnection {
                     UUID userID = UUID.fromString(rs.getString("UserID"));
                     String name = rs.getString("Name");
                     boolean isAdmin = rs.getBoolean("IsAdmin");
+                    Date createdAt = rs.getDate("CreatedAt");
 
-                    return new UserModel(userID, name, username, password, new Date(2023, 11, 26), isAdmin);
+
+                    return new UserModel(userID, name, username, password, createdAt, isAdmin);
                 } else {
                     // Se a senha estiver incorreta, lançar a exceção InvalidPasswordException
                     throw new InvalidPasswordException("Senha incorreta");

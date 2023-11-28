@@ -77,6 +77,14 @@ public class Main {
         }
     }
 
+    // Métodos para conferir se o usuário autenticado é Admin, fazendo com que coisas sejam limitadas
+    private static boolean isUserAdmin(UserModel user) {
+        return user != null && user.getAdmin();
+    }
+    private static boolean isAdminUserAuthenticated(UserModel authenticatedUser) {
+        return isUserAdmin(authenticatedUser);
+    }
+
     // Entrar no programa com login
     private static void loginUser(TaskDAO taskDAO, UserDAO userDAO) {
         String username = JOptionPane.showInputDialog("Digite o nome de usuario:");
@@ -103,15 +111,23 @@ public class Main {
                         break;
 
                     case 2:
-                        updateTask(taskDAO, authenticatedUser);
-                        break;
+                        if (isAdminUserAuthenticated(authenticatedUser)) {
+                            updateTask(taskDAO, authenticatedUser);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Apenas administradores podem editar tarefas.");
+                        }
+                    break;
 
                     case 3:
                         updateUser(userDAO, authenticatedUser);
                         break;
 
                     case 4:
-                        deleteTask(taskDAO, authenticatedUser);
+                        if (isAdminUserAuthenticated(authenticatedUser)) {
+                            deleteTask(taskDAO, authenticatedUser);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Apenas administradores podem deletar tarefas.");
+                        }
                         break;
 
                     case 5:
@@ -238,7 +254,6 @@ public class Main {
     }
 
     // Atualizando usuário
-// Atualizando usuário
     private static void updateUser(UserDAO userDAO, UserModel authenticatedUser) {
         // Exibir os dados atuais do usuário
         StringBuilder currentUserDetails = new StringBuilder("Dados atuais do usuario:\n");
@@ -269,7 +284,6 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Falha ao atualizar os dados do usuario.");
         }
     }
-
 
     // Deletando tarefa
     private static void deleteTask(TaskDAO taskDAO, UserModel authenticatedUser) {

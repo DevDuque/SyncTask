@@ -64,7 +64,7 @@ public class UserModel {
     }
 
     public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+        this.createdAt = new Date();
     }
 
     public Boolean getAdmin() {
