@@ -19,11 +19,9 @@
 Objetivo:  Desenvolver um sistema utilizando conceitos de Programação Orientada a Objetos para armazenamento e leitura de informações em um banco de dados. O projeto SyncTask, uma aplicação que visa facilitar o gerenciamento de tarefas e projetos de forma sincronizada. Nosso sistema é construído com base nos princípios da Programação Orientada a Objetos e utiliza um banco de dados para armazenar e recuperar informações essenciais.
 
 ## Banco de Dados: SyncTask
-Tabelas: UserTable: Armazena dados dos usuários. & TaskTable: Registra as tarefas associadas aos usuários.
+<img src="./public/Tables.png" alt="Tables Image" />
+No contexto do banco de dados desenvolvido, o modelo conceitual destaca as entidades principais, como UserTable e TaskTable, e mostra como elas se relacionam. Por exemplo, a seta de UserID em UserTable indica uma relação de "um para muitos" com UserID em TaskTable, indicando que um usuário pode ter várias tarefas.
 
-Campos (UserTable): UserID, Name, Username, Password, CreatedAt, IsAdmin.
-
-Campos (TaskTable): TaskID, UserID (chave estrangeira), Title, Description, DateEnd, Priority, CreatedAt.
 
 ## 🎓 COLTEC
 Requisitos:
