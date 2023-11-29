@@ -8,7 +8,6 @@ import org.SyncTask.database.TaskDAO;
 import org.SyncTask.connection.MyConnection;
 
 // Exceptions
-import org.SyncTask.exceptions.InvalidTaskDateException;
 import org.SyncTask.exceptions.UserNotFoundException;
 import org.SyncTask.exceptions.InvalidPasswordException;
 
@@ -368,6 +367,7 @@ public class Main {
                 break;
 
                 case 2:
+                    exitProgram = true;
                     break;
             }
         }

@@ -136,15 +136,22 @@ public class UserDAO extends DAO<UserModel> {
     public boolean update(UserModel user) {
         boolean response = false;
 
+        // Comando MySQL para atualização
         String updateQuery = "UPDATE UserTable SET Name = ?, Username = ? WHERE UserID = ?";
 
         try {
+            // Preparando a declaração SQL
             PreparedStatement ps = this.myConnection.prepareStatement(updateQuery);
+
+            // Adicionando dados novos no banco de dados
             ps.setString(1, user.getName());
             ps.setString(2, user.getUsername());
             ps.setString(3, user.getUserID().toString());
 
+            // Atribuindo rowsAffected para a execução do update
             int rowsAffected = ps.executeUpdate();
+
+            // Como a função retorna um boolean, conferimos se rowsAffected é maior que 0, ou seja quantidade de linhas afetadas > 0
             response = rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Erro ao atualizar usuário: " + user.getUserID() + e.getMessage());

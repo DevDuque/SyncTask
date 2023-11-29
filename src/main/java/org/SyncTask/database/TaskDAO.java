@@ -5,6 +5,7 @@ import org.SyncTask.models.TaskModel;
 
 import org.SyncTask.exceptions.InvalidTaskDateException;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -140,11 +141,12 @@ public class TaskDAO extends DAO<TaskModel> {
 
             // Verificar se DateEnd é maior que CreatedAt
             if (task.getDateEnd().before(task.getCreatedAt())) {
-                throw new InvalidTaskDateException("Erro: A data de término da tarefa não pode ser anterior à data de criação.");
+                throw new InvalidTaskDateException("Erro: A data de termino da tarefa nao pode ser anterior a data de criacao.");
             }
             // Preparando a declaração SQL com a capacidade de recuperar chaves geradas
             PreparedStatement ps = this.myConnection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
 
+            // Criando um TaskID
             task.setTaskID();
 
             // Definindo os parâmetros da declaração SQL com base no objeto TaskModel fornecido
@@ -173,8 +175,8 @@ public class TaskDAO extends DAO<TaskModel> {
             System.err.println("Erro ao criar tarefa: " + e.getMessage());
             e.printStackTrace(); // Adicionando rastreamento completo da exceção
         } catch (InvalidTaskDateException e) {
-            // Lidando com exceções SQL, imprimindo uma mensagem de erro caso o DateEnd seja maior que CreatedAt
-            System.err.println("Erro ao criar tarefa: " + e.getMessage());
+            // Lidando com exceções e retornando null
+            JOptionPane.showMessageDialog(null, e.getMessage());
             return null;
         }
 
@@ -187,12 +189,15 @@ public class TaskDAO extends DAO<TaskModel> {
         // Atualizar uma tarefa no banco de dados
         boolean response = false;
 
+        // Comando MySQL para atualização
         String updateQuery = "UPDATE TaskTable SET Title = ?, Description = ?, Priority = ?, DateEnd = ? WHERE TaskID = ?";
 
 
         try {
+            // Preparando a declaração SQL
             PreparedStatement ps = this.myConnection.prepareStatement(updateQuery);
 
+            // Adicionando dados novos no banco de dados
             ps.setString(1, task.getTitle());
             ps.setString(2, task.getDescription());
             ps.setString(3, task.getPriority());
@@ -203,7 +208,10 @@ public class TaskDAO extends DAO<TaskModel> {
             java.sql.Date sqlDate = new java.sql.Date(task.getDateEnd().getTime());
             ps.setDate(4, sqlDate);
 
+            // Atribuindo rowsAffected para a execução do update
             int rowsAffected = ps.executeUpdate();
+
+            // Como a função retorna um boolean, conferimos se rowsAffected é maior que 0, ou seja quantidade de linhas afetadas > 0
             response = rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Erro ao atualizar tarefa: " + task.getTaskID() + e.getMessage());
@@ -229,7 +237,7 @@ public class TaskDAO extends DAO<TaskModel> {
             return rowsDeleted > 0;
 
         } catch (SQLException e) {
-            System.err.println("Erro durante a deleção da tarefa: " + e.getMessage());
+            System.err.println("Erro durante a delecao da tarefa: " + e.getMessage());
             return false;
         }
     }
