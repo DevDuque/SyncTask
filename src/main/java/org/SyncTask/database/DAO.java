@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class DAO <Type> {
+public interface DAO <Type> {
 
     // Encontrar o todos dados
     public abstract List<Type> findAll();

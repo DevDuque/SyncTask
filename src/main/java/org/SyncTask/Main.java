@@ -55,12 +55,9 @@ public class Main {
         }
     }
 
-    // Métodos para conferir se o usuário autenticado é Admin, fazendo com que coisas sejam limitadas
-    private static boolean isUserAdmin(UserModel user) {
+    // Método para conferir se o usuário autenticado é Admin, fazendo com que coisas sejam limitadas
+    private static boolean isAdminUserAuthenticated(UserModel user) {
         return user != null && user.getAdmin();
-    }
-    private static boolean isAdminUserAuthenticated(UserModel authenticatedUser) {
-        return isUserAdmin(authenticatedUser);
     }
 
     // Função para criar usuário
@@ -133,10 +130,8 @@ public class Main {
             } else {
                 JOptionPane.showMessageDialog(null, "Falha ao criar a tarefa.");
             }
-        } else if (confirmOption == 1) {
-            JOptionPane.showMessageDialog(null, "Retornando ao inicio. Nenhuma tarefa inserida.");
         } else {
-            JOptionPane.showMessageDialog(null, "Opcao invalida. Retornando ao inicio. Nenhuma tarefa inserida.");
+            JOptionPane.showMessageDialog(null, "Retornando ao inicio. Nenhuma tarefa inserida.");
         }
     }
 
@@ -164,10 +159,10 @@ public class Main {
 
         if (taskToUpdate != null) {
             // Solicitar ao usuário as informações atualizadas
-            String newTitle = JOptionPane.showInputDialog("Novo Titulo:", taskToUpdate.getTitle());
-            String newDescription = JOptionPane.showInputDialog("Nova Descricao:", taskToUpdate.getDescription());
-            String newPriority = JOptionPane.showInputDialog("Nova Prioridade:", taskToUpdate.getPriority());
-            String newDateEndStr = JOptionPane.showInputDialog("Nova Data de Termino (formato dd/mm/yyyy):", taskToUpdate.getDateEnd());
+            String newTitle = JOptionPane.showInputDialog("Novo Titulo:");
+            String newDescription = JOptionPane.showInputDialog("Nova Descricao:");
+            String newPriority = JOptionPane.showInputDialog("Nova Prioridade:");
+            String newDateEndStr = JOptionPane.showInputDialog("Nova Data de Termino (formato dd/mm/yyyy):");
 
             // Convertendo a string da nova data de término para um objeto Date
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -206,8 +201,8 @@ public class Main {
         JOptionPane.showMessageDialog(null, currentUserDetails.toString(), "Dados Atuais", JOptionPane.PLAIN_MESSAGE);
 
         // Solicitar ao usuário as informações atualizadas
-        String newName = JOptionPane.showInputDialog("Novo Nome:", authenticatedUser.getName());
-        String newUsername = JOptionPane.showInputDialog("Novo Nome de Usuario:", authenticatedUser.getUsername());
+        String newName = JOptionPane.showInputDialog("Novo Nome:");
+        String newUsername = JOptionPane.showInputDialog("Novo Nome de Usuario:");
 
         // Atualizar os dados do usuário autenticado
         authenticatedUser.setName(newName);
@@ -251,12 +246,16 @@ public class Main {
     }
 
     // Deletar Conta
-    private static void deleteUser(UserDAO userDAO, UserModel authenticatedUser) {
+    private static void deleteUser(UserDAO userDAO, TaskDAO taskDAO, UserModel authenticatedUser) {
+
         // Deletar conta
         int confirmDelete = JOptionPane.showConfirmDialog(null, "Tem certeza de que deseja deletar sua conta?", "Confirmação", JOptionPane.YES_NO_OPTION);
         if (confirmDelete == JOptionPane.YES_OPTION) {
             // Deletar o próprio usuário autenticado
             boolean deletedUser = userDAO.delete(authenticatedUser.getUserID());
+
+            // Deletar tarefas do usuário
+            boolean deletedTasks = taskDAO.deleteTasksByUserId(authenticatedUser.getUserID().toString());
 
             if (deletedUser) {
                 JOptionPane.showMessageDialog(null, "Sua conta foi deletada com sucesso!");
@@ -268,74 +267,80 @@ public class Main {
 
     // Entrar no programa com login
     private static void loginUser(TaskDAO taskDAO, UserDAO userDAO) {
-        String username = JOptionPane.showInputDialog("Digite o nome de usuario:");
-        String password = JOptionPane.showInputDialog("Digite sua senha:");
+        boolean loggedIn = false;
 
-        try {
+        while (!loggedIn) {
+            String username = JOptionPane.showInputDialog("Digite o nome de usuario:");
+            String password = JOptionPane.showInputDialog("Digite sua senha:");
 
-            // Fazendo a autenticação do usuário
-            UserModel authenticatedUser = MyConnection.authenticateUser(username, password);
-            JOptionPane.showMessageDialog(null, "Usuario autenticado com sucesso!");
+            try {
+                // Fazendo a autenticação do usuário
+                UserModel authenticatedUser = MyConnection.authenticateUser(username, password);
+                JOptionPane.showMessageDialog(null, "Usuario autenticado com sucesso!");
 
-            int choice;
-            do {
-                // Mostrando um novo menu, para o usuário autenticado
-                String[] options = {"Criar nova tarefa", "Listar tarefas", "Editar tarefa", "Editar conta", "Deletar tarefa", "Deletar conta", "Sair da sua conta"};
-                choice = JOptionPane.showOptionDialog(null, "Escolha uma opcao:", "Menu",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                        null, options, options[0]);
+                int choice;
+                do {
+                    // Mostrando um novo menu, para o usuário autenticado
+                    String[] options = {"Criar nova tarefa", "Listar tarefas", "Editar tarefa", "Editar conta", "Deletar tarefa", "Deletar conta", "Sair da sua conta"};
+                    choice = JOptionPane.showOptionDialog(null, "Escolha uma opcao:", "Menu",
+                            JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                            null, options, options[0]);
 
-                switch (choice) {
-                    case 0:
-                        // Criar tarefa, usando o usuario logado e DAO de tarefa para manipulações em banco
-                        createTask(taskDAO, authenticatedUser);
-                        break;
+                    switch (choice) {
+                        case 0:
+                            // Criar tarefa, usando o usuario logado e DAO de tarefa para manipulações em banco
+                            createTask(taskDAO, authenticatedUser);
+                            break;
 
-                    case 1:
-//                     Puxando a lista de tarefas para o usuário logado!
-                        listTask(taskDAO, authenticatedUser);
-                        break;
+                        case 1:
+                            // Puxando a lista de tarefas para o usuário logado!
+                            listTask(taskDAO, authenticatedUser);
+                            break;
 
-                    case 2: // Restringindo funcionalidade de não admin
-                        if (isAdminUserAuthenticated(authenticatedUser)) {
-                            updateTask(taskDAO, authenticatedUser);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Apenas administradores podem editar tarefas.");
-                        }
-                        break;
+                        case 2: // Restringindo funcionalidade de não admin
+                            if (isAdminUserAuthenticated(authenticatedUser)) {
+                                updateTask(taskDAO, authenticatedUser);
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Apenas administradores podem editar tarefas.");
+                            }
+                            break;
 
-                    case 3:
-                        // Atualizando dados de usuário
-                        updateUser(userDAO, authenticatedUser);
-                        break;
+                        case 3:
+                            // Atualizando dados de usuário
+                            updateUser(userDAO, authenticatedUser);
+                            break;
 
-                    case 4: // Restringindo funcionalidade de não admin
-                        if (isAdminUserAuthenticated(authenticatedUser)) {
-                            deleteTask(taskDAO, authenticatedUser);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Apenas administradores podem deletar tarefas.");
-                        }
-                        break;
+                        case 4: // Restringindo funcionalidade de não admin
+                            if (isAdminUserAuthenticated(authenticatedUser)) {
+                                deleteTask(taskDAO, authenticatedUser);
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Apenas administradores podem deletar tarefas.");
+                            }
+                            break;
 
-                    case 5:
-                        // Deletando usuário logado
-                        deleteUser(userDAO, authenticatedUser);
-                        break;
+                        case 5:
+                            // Deletando usuário logado
+                            deleteUser(userDAO, taskDAO, authenticatedUser);
+                            loggedIn = true;  // sair do loop interno e voltar para o login/cadastro
+                            break;
 
-                    case 6:
-                        JOptionPane.showMessageDialog(null, "Saindo da conta..." + "Ate logo " + authenticatedUser.getUsername() + "!");
-                        break;
+                        case 6:
+                            JOptionPane.showMessageDialog(null, "Saindo da conta..." + "Ate logo " + authenticatedUser.getUsername() + "!");
+                            loggedIn = true;  // sair do loop interno e voltar para o login/cadastro
+                            break;
 
-                    default:
-                        JOptionPane.showMessageDialog(null, "Opcao invalida. Tente novamente.");
-                        break;
-                }
-            } while (choice != 6);
+                        default:
+                            JOptionPane.showMessageDialog(null, "Opcao invalida. Tente novamente.");
+                            break;
+                    }
+                } while (choice != 6 && choice != 5);
 
-        } catch (UserNotFoundException | InvalidPasswordException e) {
-            JOptionPane.showMessageDialog(null, "Falha na autenticacao: " + e.getMessage());
+            } catch (UserNotFoundException | InvalidPasswordException e) {
+                JOptionPane.showMessageDialog(null, "Falha na autenticacao: " + e.getMessage());
+            }
         }
     }
+
 
     public static void main(String[] args) {
         // Pegando uma instância de Connection usando o método getConnection() da classe MyConnection

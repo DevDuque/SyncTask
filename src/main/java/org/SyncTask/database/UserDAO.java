@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.Date;
 
-public class UserDAO extends DAO<UserModel> {
+public class UserDAO implements DAO<UserModel> {
     private Connection myConnection;
 
     // Construtor que obtém uma conexão do banco de dados ao instanciar o UserDAO

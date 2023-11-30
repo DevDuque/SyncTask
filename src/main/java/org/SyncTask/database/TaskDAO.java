@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class TaskDAO extends DAO<TaskModel> {
+public class TaskDAO implements DAO<TaskModel> {
 
     private Connection myConnection;
 
@@ -92,7 +92,7 @@ public class TaskDAO extends DAO<TaskModel> {
         return null;
     }
 
-    // Adicione este método na classe TaskDAO
+    // Metodo para retornar uma lista de tarefas do usuário pedido
     public List<TaskModel> findByUserID(UUID userID) {
         List<TaskModel> taskList = new ArrayList<>();
 
@@ -127,6 +127,20 @@ public class TaskDAO extends DAO<TaskModel> {
         return taskList;
     }
 
+    public boolean deleteTasksByUserId(String userId) {
+        try {
+            PreparedStatement preparedStatement = this.myConnection.prepareStatement("DELETE FROM TaskTable WHERE UserID = ?");
+
+            preparedStatement.setString(1, userId);
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Trate a exceção apropriadamente em um ambiente de produção
+            return false;
+        }
+    }
 
     @Override
     public TaskModel insert(TaskModel task) {
@@ -168,7 +182,7 @@ public class TaskDAO extends DAO<TaskModel> {
                 // Atribuindo a tarefa inserida à variável de retorno
                 taskInserted = task;
             } else {
-                System.err.println("Nenhuma linha afetada ao inserir a tarefa. A inserção falhou.");
+                System.err.println("Nenhuma linha afetada ao inserir a tarefa. A insercao falhou.");
             }
         } catch (SQLException e) {
             // Lidando com exceções SQL, imprimindo uma mensagem de erro
@@ -194,6 +208,11 @@ public class TaskDAO extends DAO<TaskModel> {
 
 
         try {
+            // Verificar se DateEnd é maior que CreatedAt
+            if (task.getDateEnd().before(task.getCreatedAt())) {
+                throw new InvalidTaskDateException("Erro: A data de termino da tarefa nao pode ser anterior a data de criacao.");
+            }
+
             // Preparando a declaração SQL
             PreparedStatement ps = this.myConnection.prepareStatement(updateQuery);
 
@@ -215,6 +234,10 @@ public class TaskDAO extends DAO<TaskModel> {
             response = rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Erro ao atualizar tarefa: " + task.getTaskID() + e.getMessage());
+        } catch (InvalidTaskDateException e) {
+            // Lidando com exceções e retornando null
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            return false;
         }
 
         return response;
