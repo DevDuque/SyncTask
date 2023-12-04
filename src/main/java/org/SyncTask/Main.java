@@ -8,6 +8,7 @@ import org.SyncTask.database.TaskDAO;
 import org.SyncTask.connection.MyConnection;
 
 // Exceptions
+import org.SyncTask.exceptions.UserExistsException;
 import org.SyncTask.exceptions.UserNotFoundException;
 import org.SyncTask.exceptions.InvalidPasswordException;
 
@@ -26,19 +27,19 @@ public class Main {
 
     // Função para escolher uma tarefa de uma lista
     // Criando uma lista de strings com os dados da tarefa para facilitar na hora de inserir pelo ID, visto que o TaskID é algo auto incrementavel com 36 espaços.
+// No método chooseTaskFromList da classe Main
     private static TaskModel chooseTaskFromList(List<TaskModel> taskList) {
         if (taskList.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Sem tarefas registradas.");
+            JOptionPane.showMessageDialog(null, "Sem tarefas registradas, comece a criar tarefas, aqui!");
             return null;
         }
-        // Criando uma string usando a funcionalidade de StringBuilder, que faz com que a gente aclope dados de uma string
+
         StringBuilder taskOptions = new StringBuilder("Escolha uma tarefa:\n");
         for (int i = 0; i < taskList.size(); i++) {
-            // Atribuindo ID conforme o Indíce e depois adiciona . e no final adiciona um \n
+            // Exibir informações formatadas da tarefa
             taskOptions.append(i + 1).append(". ").append(TaskDAO.returnTask(taskList.get(i))).append("\n");
         }
 
-        // Adicionando opção das tarefas criadas
         int taskChoice;
         try {
             taskChoice = Integer.parseInt(JOptionPane.showInputDialog(taskOptions.toString())) - 1;
@@ -76,13 +77,21 @@ public class Main {
         newUser.setPassword(newPassword);
         newUser.setAdmin(isAdmin);
 
-        // Inserindo usando userDAO
-        UserModel userCreated = userDAO.insert(newUser);
+        try {
+            // Verificar se o usuário já existe antes de inserir
+            if (userDAO.isUserExists(newUsername)) {
+                throw new UserExistsException("Usuario ja existe no banco de dados.");
+            }
 
-        if (userCreated != null) {
-            JOptionPane.showMessageDialog(null, "Usuario criado com sucesso! \nNome: " + newUser.getName() + "\nUserID = " + newUser.getUserID() + "\n");
-        } else {
-            JOptionPane.showMessageDialog(null, "Erro ao criar um usuario!");
+            UserModel userCreated = userDAO.insert(newUser);
+
+            if (userCreated != null) {
+                JOptionPane.showMessageDialog(null, "Usuario criado com sucesso! \nNome: " + newUser.getName() + "\nUserID = " + newUser.getUserID() + "\n");
+            } else {
+                JOptionPane.showMessageDialog(null, "Erro ao criar um usuario!");
+            }
+        } catch (UserExistsException e) {
+            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
         }
     }
 
@@ -138,7 +147,7 @@ public class Main {
     // Adicionando a lista de tarefas para o usuário autenticado
     private static void listTask(TaskDAO taskDAO, UserModel authenticatedUser) {
         // Recuperar e exibir todas as tarefas do usuário
-        List<TaskModel> userTasks = taskDAO.findByUserID(authenticatedUser.getUserID());
+        List<TaskModel> userTasks = taskDAO.findAll();
         StringBuilder taskList = new StringBuilder("Tarefas do usuario " + authenticatedUser.getUsername() + ":\n");
 
         if (!userTasks.isEmpty()) {
@@ -150,6 +159,8 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Sem tarefas registradas, comece a criar tarefas, aqui!");
         }
     }
+
+
 
     // Atualizando uma tarefa
     private static void updateTask(TaskDAO taskDAO, UserModel authenticatedUser) {
@@ -203,6 +214,12 @@ public class Main {
         // Solicitar ao usuário as informações atualizadas
         String newName = JOptionPane.showInputDialog("Novo Nome:");
         String newUsername = JOptionPane.showInputDialog("Novo Nome de Usuario:");
+
+        // Verificar se o usuário pressionou Cancelar
+        if (newName == null || newUsername == null) {
+            JOptionPane.showMessageDialog(null, "Edicao cancelada. Nenhum dado do usuario foi alterado.");
+            return;
+        }
 
         // Atualizar os dados do usuário autenticado
         authenticatedUser.setName(newName);
@@ -364,12 +381,12 @@ public class Main {
                 case 0:
                     // Cria o usuário
                     createUser(userDAO);
-                break;
+                    break;
 
                 case 1:
                     // Abre o programa
                     loginUser(taskDAO, userDAO);
-                break;
+                    break;
 
                 case 2:
                     exitProgram = true;

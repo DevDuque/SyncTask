@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,6 +58,7 @@ public class TaskDAO implements DAO<TaskModel> {
 
         return taskList;
     }
+
 
     @Override
     public TaskModel findByID(UUID ID) {
@@ -233,7 +235,7 @@ public class TaskDAO implements DAO<TaskModel> {
             // Como a função retorna um boolean, conferimos se rowsAffected é maior que 0, ou seja quantidade de linhas afetadas > 0
             response = rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("Erro ao atualizar tarefa: " + task.getTaskID() + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao atualizar tarefa: " + task.getTaskID() + e.getMessage());
         } catch (InvalidTaskDateException e) {
             // Lidando com exceções e retornando null
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -268,7 +270,8 @@ public class TaskDAO implements DAO<TaskModel> {
     public static void returnTaskList(List<TaskModel> taskList) {
         // Verificar se a lista de tarefas está vazia
         if (taskList.isEmpty()) {
-            System.out.println("Sem tarefas registradas, comece a criar tarefas, aqui!");
+            JOptionPane.showMessageDialog(null, "Erro ao atualizar tarefa: ");
+
         } else {
             // Imprimir os detalhes das tarefas na lista
             for (TaskModel task : taskList) {
@@ -277,17 +280,13 @@ public class TaskDAO implements DAO<TaskModel> {
         }
     }
 
+    // No método returnTask da classe TaskDAO
     public static String returnTask(TaskModel task) {
-        // Construir uma String com os detalhes da tarefa
-        StringBuilder taskDetails = new StringBuilder();
-        taskDetails.append("TaskID: ").append(task.getTaskID()).append("\n");
-        taskDetails.append("UserID: ").append(task.getUserID()).append("\n");
-        taskDetails.append("Title: ").append(task.getTitle()).append("\n");
-        taskDetails.append("Description: ").append(task.getDescription()).append("\n");
-        taskDetails.append("DateEnd: ").append(task.getDateEnd()).append("\n");
-        taskDetails.append("Priority: ").append(task.getPriority()).append("\n\n");
+        // Formatar a representação da tarefa
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = dateFormat.format(task.getDateEnd());
 
-        // Retornar a String com os detalhes da tarefa
-        return taskDetails.toString();
+        return String.format("ID: %s\nTitulo: %s\nDescricao: %s\nPrioridade: %s\nData de Termino: %s",
+                task.getTaskID(), task.getTitle(), task.getDescription(), task.getPriority(), formattedDate);
     }
 }

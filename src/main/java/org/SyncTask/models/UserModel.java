@@ -29,9 +29,7 @@ public class UserModel {
     }
 
     // Getters & Setters para pegar os dados e deixa-los privados
-    public UUID getUserID() {
-        return UserID;
-    }
+    public UUID getUserID() { return UserID; }
 
     public void setUserID() { this.UserID = UUID.randomUUID(); }
 

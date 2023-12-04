@@ -91,6 +91,38 @@ public class UserDAO implements DAO<UserModel> {
         return user;
     }
 
+    // Verifica se o usúario existe
+    public boolean isUserExists(String username) {
+        Connection connection = MyConnection.getConnection();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            // Consulta SQL para verificar se o usuário já existe
+            String sql = "SELECT COUNT(*) FROM usertable WHERE username = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Fechar recursos
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
     // Função para inserir um usuário no banco de dados
     @Override
     public UserModel insert(UserModel user) {
@@ -184,15 +216,18 @@ public class UserDAO implements DAO<UserModel> {
         }
     }
 
-    public static void returnUser(UserModel user) {
+    public static String returnUser(UserModel user) {
 
-        // Imprimir os detalhes do usuário na lista
-        System.out.println("UserID: " + user.getUserID());
-        System.out.println("Name: " + user.getName());
-        System.out.println("Username: " + user.getUsername());
-        System.out.println("Admin: " + user.getAdmin());
-        System.out.println("CreatedAt " + user.getCreatedAt());
-        System.out.println();
+        // Construir uma String com os detalhes da tarefa
+        StringBuilder userDetails = new StringBuilder();
+        userDetails.append("UserID: ").append(user.getUserID()).append("\n");
+        userDetails.append("Name: ").append(user.getName()).append("\n");
+        userDetails.append("Username: ").append(user.getUsername()).append("\n");
+        userDetails.append("Admin: ").append(user.getAdmin()).append("\n");
+        userDetails.append("CreatedAt: ").append(user.getCreatedAt()).append("\n");
+
+        // Retornar a String com os detalhes da tarefa
+        return userDetails.toString();
     }
 
     public static void returnUserList(List<UserModel> userList) {
