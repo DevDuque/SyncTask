@@ -27,7 +27,6 @@ public class Main {
 
     // Função para escolher uma tarefa de uma lista
     // Criando uma lista de strings com os dados da tarefa para facilitar na hora de inserir pelo ID, visto que o TaskID é algo auto incrementavel com 36 espaços.
-// No método chooseTaskFromList da classe Main
     private static TaskModel chooseTaskFromList(List<TaskModel> taskList) {
         if (taskList.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Sem tarefas registradas, comece a criar tarefas, aqui!");
@@ -147,7 +146,7 @@ public class Main {
     // Adicionando a lista de tarefas para o usuário autenticado
     private static void listTask(TaskDAO taskDAO, UserModel authenticatedUser) {
         // Recuperar e exibir todas as tarefas do usuário
-        List<TaskModel> userTasks = taskDAO.findAll();
+        List<TaskModel> userTasks = taskDAO.findByUserID(authenticatedUser.getUserID());
         StringBuilder taskList = new StringBuilder("Tarefas do usuario " + authenticatedUser.getUsername() + ":\n");
 
         if (!userTasks.isEmpty()) {
@@ -159,8 +158,6 @@ public class Main {
             JOptionPane.showMessageDialog(null, "Sem tarefas registradas, comece a criar tarefas, aqui!");
         }
     }
-
-
 
     // Atualizando uma tarefa
     private static void updateTask(TaskDAO taskDAO, UserModel authenticatedUser) {
@@ -342,7 +339,7 @@ public class Main {
                             break;
 
                         case 6:
-                            JOptionPane.showMessageDialog(null, "Saindo da conta..." + "Ate logo " + authenticatedUser.getUsername() + "!");
+                            JOptionPane.showMessageDialog(null, "Saindo da conta..." + "Ate logo, " + authenticatedUser.getUsername() + "!");
                             loggedIn = true;  // sair do loop interno e voltar para o login/cadastro
                             break;
 
