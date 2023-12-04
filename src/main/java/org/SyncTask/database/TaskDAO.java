@@ -286,7 +286,7 @@ public class TaskDAO implements DAO<TaskModel> {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String formattedDate = dateFormat.format(task.getDateEnd());
 
-        return String.format("ID: %s\nTitulo: %s\nDescricao: %s\nPrioridade: %s\nData de Termino: %s",
+        return String.format("ID: %s\nTitulo: %s\nDescricao: %s\nPrioridade: %s\nData de Termino: %s \n",
                 task.getTaskID(), task.getTitle(), task.getDescription(), task.getPriority(), formattedDate);
     }
 }
