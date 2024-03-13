@@ -15,7 +15,7 @@ public class MyConnection {
 
     public static Connection getConnection() {
         if (conn == null) {
-            // If the connection has not been created yet, create it
+
             String uri = "jdbc:mysql://localhost:3306/SyncTask";
             String usuario = "root";
             String senha = "";
@@ -24,7 +24,7 @@ public class MyConnection {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 conn = DriverManager.getConnection(uri, usuario, senha);
             } catch (ClassNotFoundException | SQLException e) {
-                e.printStackTrace(); // Handle exceptions more robustly in production
+                e.printStackTrace();
             }
         }
 
